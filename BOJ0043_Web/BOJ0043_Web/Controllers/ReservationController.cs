@@ -3,9 +3,12 @@ using BOJ0043_Web.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel;
 
 namespace BOJ0043_Web.Controllers
 {
+    [DisplayName("Rezervace")]
+    [Description("Správa rezervací pracovních míst")]
     public class ReservationController : Controller
     {
         private readonly IReservationRepository _reservationRepository;
@@ -24,6 +27,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: Reservation
         [Authorize(Policy = "RequireReadOnlyRole")]
+        [DisplayName("Seznam rezervací")]
+        [Description("Získá seznam všech rezervací včetně jejich pracovních míst a coworkingových prostorů")]
         public async Task<IActionResult> Index()
         {
             var reservations = await _reservationRepository.GetAllWithWorkspaceAndCoworkingSpaceAsync();
@@ -33,6 +38,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: Reservation/Details/5
         [Authorize(Policy = "RequireReadOnlyRole")]
+        [DisplayName("Detail rezervace")]
+        [Description("Zobrazí detail konkrétní rezervace včetně pracovního místa a coworkingového prostoru")]
         public async Task<IActionResult> Details(int id)
         {
             var reservation = await _reservationRepository.GetWithWorkspaceAsync(id);
@@ -48,6 +55,8 @@ namespace BOJ0043_Web.Controllers
         // GET: Reservation/Create
         // Může obsahovat parametr workspaceId pro předvyplnění formuláře
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Vytvoření rezervace - formulář")]
+        [Description("Zobrazí formulář pro vytvoření nové rezervace pracovního místa")]
         public async Task<IActionResult> Create(int? workspaceId)
         {
             ViewBag.Workspaces = new SelectList(
@@ -79,6 +88,8 @@ namespace BOJ0043_Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Vytvoření rezervace")]
+        [Description("Vytvoří novou rezervaci pracovního místa podle zadaných údajů")]
         public async Task<IActionResult> Create(Reservation reservation)
         {
             // Kontrola dostupnosti pracovního místa
@@ -119,6 +130,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: Reservation/Complete/5
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Ukončení rezervace - formulář")]
+        [Description("Zobrazí formulář pro ukončení rezervace pracovního místa")]
         public async Task<IActionResult> Complete(int id)
         {
             var reservation = await _reservationRepository.GetWithWorkspaceAsync(id);
@@ -140,6 +153,8 @@ namespace BOJ0043_Web.Controllers
         [HttpPost, ActionName("Complete")]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Ukončení rezervace")]
+        [Description("Ukončí rezervaci pracovního místa podle zadaných údajů")]
         public async Task<IActionResult> CompleteConfirmed(int id)
         {
             try
@@ -157,6 +172,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: Reservation/Statistics
         [Authorize(Policy = "RequireReadOnlyRole")]
+        [DisplayName("Statistiky rezervací")]
+        [Description("Zobrazí statistiky rezervací pracovních míst za zvolené období")]
         public async Task<IActionResult> Statistics()
         {
             _reservationRepository.AutoCompleteExpiredReservationsAsync();
@@ -175,6 +192,8 @@ namespace BOJ0043_Web.Controllers
         // POST: Reservation/Statistics
         [HttpPost]
         [Authorize(Policy = "RequireReadOnlyRole")]
+        [DisplayName("Statistiky rezervací")]
+        [Description("Zobrazí statistiky rezervací pracovních míst za zvolené období")]
         public async Task<IActionResult> Statistics(DateTime startDate, DateTime endDate)
         {
             var statistics = await _reservationRepository.GetReservationStatisticsAsync(startDate, endDate);

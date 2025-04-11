@@ -1,0 +1,518 @@
+@{
+    ViewData["Title"] = "API Dokumentace";
+}
+
+<div class="api-docs-container">
+    <header class="api-docs-header">
+        <h1>API Dokumentace</h1>
+        <p class="lead">Prohlížeč API pro Coworking Space Management System</p>
+    </header>
+
+    <main class="api-docs-content">
+        <div id="api-loader" class="text-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Načítání...</span>
+            </div>
+            <p class="mt-2">Načítání API dokumentace...</p>
+        </div>
+        
+        <div id="api-error" class="alert alert-danger d-none my-4">
+            <h4>Chyba při načítání dokumentace</h4>
+            <p>Nepodařilo se načíst API dokumentaci. Zkuste to prosím později.</p>
+        </div>
+        
+        <div id="api-container" class="d-none">
+            <div class="api-info mb-4">
+                <h2 id="api-title"></h2>
+                <p id="api-description" class="lead"></p>
+                <div class="api-version mb-3">
+                    <span class="badge bg-secondary">Verze: <span id="api-version"></span></span>
+                </div>
+            </div>
+            
+            <div class="api-endpoints-container">
+                <div class="accordion" id="endpoints-accordion"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+@section Styles {
+    <style>
+        .api-docs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .api-docs-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .endpoint-card {
+            margin-bottom: 0.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            transition: background-color 0.2s;
+        }
+        
+        .endpoint-header:hover {
+            background-color: #e9ecef;
+        }
+        
+        .method-badge {
+            font-weight: bold;
+            min-width: 70px;
+            text-align: center;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 15px;
+            font-family: monospace;
+        }
+        
+        .get { background-color: #61affe; color: white; }
+        .post { background-color: #49cc90; color: white; }
+        .put { background-color: #fca130; color: white; }
+        .delete { background-color: #f93e3e; color: white; }
+        .patch { background-color: #50e3c2; color: white; }
+        
+        .endpoint-path {
+            font-family: monospace;
+            font-size: 16px;
+            margin-right: 15px;
+            flex-grow: 1;
+            word-break: break-all;
+        }
+        
+        .endpoint-summary {
+            color: #555;
+            flex-grow: 2;
+            font-size: 0.9rem;
+        }
+        
+        .endpoint-details {
+            padding: 15px;
+            border-top: 1px solid #dee2e6;
+            background-color: #fff;
+        }
+        
+        .endpoint-description {
+            margin-bottom: 20px;
+        }
+        
+        .param-table, .response-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        
+        .param-table th, .response-table th {
+            background-color: #f1f1f1;
+            font-weight: 500;
+            padding: 10px 15px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+        
+        .param-table td, .response-table td {
+            padding: 10px 15px;
+            border: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        
+        .param-required {
+            color: #f93e3e;
+            font-weight: bold;
+        }
+        
+        .param-type {
+            font-family: monospace;
+            color: #666;
+            background-color: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .section-title {
+            margin: 25px 0 10px 0;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .response-code {
+            font-family: monospace;
+            font-weight: bold;
+        }
+        
+        .try-it-out {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .request-form label {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .response-container {
+            background-color: #333;
+            color: #fff;
+            font-family: monospace;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow-x: auto;
+            white-space: pre;
+            font-size: 14px;
+            max-height: 400px;
+        }
+        
+        .controller-name {
+            text-transform: capitalize;
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link {
+            color: #555;
+        }
+        
+        .nav-tabs .nav-link.active {
+            font-weight: 500;
+        }
+        
+        .schema-object {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+        .schema-property {
+            margin-left: 15px;
+            margin-bottom: 5px;
+            font-family: monospace;
+        }
+        
+        .schema-type {
+            color: #6c757d;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // URL dokumentace API
+            const apiUrl = '@ViewBag.ApiDocUrl';
+            
+            // Reference na elementy
+            const apiLoader = document.getElementById('api-loader');
+            const apiError = document.getElementById('api-error');
+            const apiContainer = document.getElementById('api-container');
+            const apiTitle = document.getElementById('api-title');
+            const apiDescription = document.getElementById('api-description');
+            const apiVersion = document.getElementById('api-version');
+            const endpointsAccordion = document.getElementById('endpoints-accordion');
+            
+            // Funkce pro získání dat API dokumentace
+            async function fetchApiDocs() {
+                try {
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Chyba HTTP! Status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    renderApiDocs(data);
+                } catch (error) {
+                    console.error('Chyba při načítání API dokumentace:', error);
+                    apiLoader.classList.add('d-none');
+                    apiError.classList.remove('d-none');
+                }
+            }
+            
+            // Funkce pro vykreslení API dokumentace
+            function renderApiDocs(data) {
+                // Nastavení základních informací
+                apiTitle.textContent = data.info.title;
+                apiDescription.textContent = data.info.description;
+                apiVersion.textContent = data.info.version;
+                  // Seřazení cest abecedně
+                const sortedPaths = Object.keys(data.paths).sort();
+                
+                // Seskupení endpointů podle kontroleru/modelu
+                const groupedEndpoints = {};
+                
+                // Zpracování všech cest
+                sortedPaths.forEach(path => {
+                    const methods = data.paths[path];
+                    
+                    // Pro každou metodu v této cestě najdeme tag, pokud je k dispozici
+                    Object.keys(methods).forEach(method => {
+                        const endpoint = methods[method];
+                        // Získáme název kontroleru/modelu, ke kterému endpoint patří
+                        let controllerName = 'default';
+                        
+                        // Kontroler extrahujeme buď z prvního tagu, nebo z operationId prefixu
+                        if (endpoint.tags && endpoint.tags.length > 0) {
+                            controllerName = endpoint.tags[0];
+                        } else if (endpoint.operationId) {
+                            // OperationId je typicky ve formátu [Kontroler]_[Akce]
+                            const parts = endpoint.operationId.split('_');
+                            if (parts.length > 0) {
+                                controllerName = parts[0];
+                            }
+                        } else {
+                            // Jako zálohu extrahujeme z cesty (např. /api/coworkingspaces -> coworkingspaces)
+                            const pathParts = path.split('/').filter(p => p);
+                            controllerName = pathParts.length > 1 ? pathParts[1] : 'default';
+                        }
+                        
+                        if (!groupedEndpoints[controllerName]) {
+                            groupedEndpoints[controllerName] = [];
+                        }
+                        
+                        groupedEndpoints[controllerName].push({
+                            path,
+                            method,
+                            ...endpoint
+                        });
+                    });
+                });
+                
+                // Vytvoření položek akordeonu pro každý controller
+                Object.keys(groupedEndpoints).sort().forEach((controller, index) => {
+                    const controllerId = `controller-${controller}`;
+                    const controllerTitle = controller.charAt(0).toUpperCase() + controller.slice(1);
+                    
+                    // Vytvoření položky akordeonu pro controller
+                    const controllerAccordionItem = document.createElement('div');
+                    controllerAccordionItem.className = 'accordion-item';
+                    controllerAccordionItem.innerHTML = `
+                        <h2 class="accordion-header" id="heading-${controllerId}">
+                            <button class="accordion-button ${index === 0 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapse-${controllerId}" aria-expanded="${index === 0 ? 'true' : 'false'}" 
+                                    aria-controls="collapse-${controllerId}">
+                                <span class="controller-name">${controllerTitle}</span> API
+                            </button>
+                        </h2>
+                        <div id="collapse-${controllerId}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" 
+                             aria-labelledby="heading-${controllerId}" data-bs-parent="#endpoints-accordion">
+                            <div class="accordion-body p-0">
+                                <div class="endpoints-list" id="endpoints-${controllerId}"></div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    endpointsAccordion.appendChild(controllerAccordionItem);
+                    
+                    // Přidání endpointů pro tento controller
+                    const endpointsList = document.getElementById(`endpoints-${controllerId}`);
+                    
+                    groupedEndpoints[controller].forEach((endpoint, i) => {
+                        const endpointId = `endpoint-${controller}-${i}`;
+                        const methodColor = getMethodColor(endpoint.method);
+                        
+                        // Vytvoření karty endpointu
+                        const endpointCard = document.createElement('div');
+                        endpointCard.className = 'endpoint-card';
+                        endpointCard.innerHTML = `
+                            <div class="endpoint-header" data-bs-toggle="collapse" data-bs-target="#${endpointId}">
+                                <span class="method-badge ${endpoint.method.toLowerCase()}">${endpoint.method.toUpperCase()}</span>
+                                <span class="endpoint-path">${endpoint.path}</span>
+                                <span class="endpoint-summary">${endpoint.summary || endpoint.description || ''}</span>
+                            </div>
+                            <div class="collapse" id="${endpointId}">                                <div class="endpoint-details">
+                                    ${endpoint.description ? `<div class="endpoint-description">${endpoint.description}</div>` : ''}
+                                    
+                                    ${renderParameters(endpoint.parameters)}
+                                    ${renderRequestBody(endpoint.requestBody)}
+                                    ${renderResponses(endpoint.responses)}
+                                </div>
+                            </div>
+                        `;
+                        
+                        endpointsList.appendChild(endpointCard);
+                    });
+                });
+                
+                // Zobrazení API containeru
+                apiLoader.classList.add('d-none');
+                apiContainer.classList.remove('d-none');
+            }
+            
+            // Pomocná funkce pro vykreslení parametrů
+            function renderParameters(parameters) {
+                if (!parameters || parameters.length === 0) {
+                    return '';
+                }
+                
+                let html = `
+                    <div class="section-title">Parametry</div>
+                    <table class="param-table">
+                        <thead>
+                            <tr>
+                                <th>Název</th>
+                                <th>Umístění</th>
+                                <th>Typ</th>
+                                <th>Povinný</th>
+                                <th>Popis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                parameters.forEach(param => {
+                    const paramLocation = getParamLocation(param.in);
+                    
+                    html += `
+                        <tr>
+                            <td><strong>${param.name}</strong></td>
+                            <td>${paramLocation}</td>
+                            <td><span class="param-type">${param.schema?.type || 'string'}</span></td>
+                            <td>${param.required ? '<span class="param-required">Ano</span>' : 'Ne'}</td>
+                            <td>${param.description || ''}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                return html;
+            }
+            
+            // Pomocná funkce pro překlad umístění parametru
+            function getParamLocation(paramIn) {
+                switch(paramIn) {
+                    case 'query': return 'Query';
+                    case 'path': return 'URL cesta';
+                    case 'header': return 'Hlavička';
+                    case 'cookie': return 'Cookie';
+                    default: return paramIn;
+                }
+            }
+            
+            // Pomocná funkce pro vykreslení těla požadavku
+            function renderRequestBody(requestBody) {
+                if (!requestBody) {
+                    return '';
+                }
+                
+                const contentType = requestBody.content && Object.keys(requestBody.content)[0];
+                const schema = contentType && requestBody.content[contentType].schema;
+                
+                let html = `
+                    <div class="section-title">Tělo požadavku</div>
+                    <p>${requestBody.description || ''}</p>
+                    <p>Povinné: ${requestBody.required ? '<span class="param-required">Ano</span>' : 'Ne'}</p>
+                `;
+                
+                if (schema) {
+                    html += `
+                        <p>Content Type: <code>${contentType}</code></p>
+                        <p>Schéma: <span class="param-type">${schema.type || ''}</span> ${schema.reference ? `<code>${schema.reference}</code>` : ''}</p>
+                    `;
+                    
+                    // Můžeme přidat schéma objektu, pokud je to objekt
+                    if (schema.type === 'object' || schema.reference) {
+                        html += `<div class="schema-object">
+                            <p><strong>Model objektu:</strong> (ukázkové schéma)</p>
+                            <div class="schema-property">
+                                <span>id: </span><span class="schema-type">integer</span>
+                            </div>
+                            <div class="schema-property">
+                                <span>name: </span><span class="schema-type">string</span>
+                            </div>
+                            <div class="schema-property">
+                                <span>description: </span><span class="schema-type">string</span>
+                            </div>
+                        </div>`;
+                    }
+                }
+                
+                return html;
+            }
+            
+            // Pomocná funkce pro vykreslení odpovědí
+            function renderResponses(responses) {
+                if (!responses) {
+                    return '';
+                }
+                
+                let html = `
+                    <div class="section-title">Odpovědi</div>
+                    <table class="response-table">
+                        <thead>
+                            <tr>
+                                <th>Kód</th>
+                                <th>Popis</th>
+                                <th>Schéma</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                Object.keys(responses).forEach(code => {
+                    const response = responses[code];
+                    const contentType = response.content && Object.keys(response.content)[0];
+                    const schema = contentType && response.content[contentType].schema;
+                    
+                    let schemaText = '';
+                    if (schema) {
+                        schemaText = `<span class="param-type">${schema.type || 'object'}</span>`;
+                        if (schema.reference) {
+                            schemaText += ` <code>${schema.reference}</code>`;
+                        }
+                    }
+                    
+                    html += `
+                        <tr>
+                            <td><span class="response-code">${code}</span></td>
+                            <td>${response.description || ''}</td>
+                            <td>${schemaText}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                return html;
+            }
+              // Pomocná funkce pro získání barvy metody
+            function getMethodColor(method) {
+                switch (method.toLowerCase()) {
+                    case 'get': return 'get';
+                    case 'post': return 'post';
+                    case 'put': return 'put';
+                    case 'delete': return 'delete';
+                    case 'patch': return 'patch';
+                    default: return '';
+                }
+            }
+            
+            // Načtení API dokumentace
+            fetchApiDocs();
+        });
+    </script>
+}

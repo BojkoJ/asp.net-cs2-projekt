@@ -3,9 +3,12 @@ using BOJ0043_Web.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel;
 
 namespace BOJ0043_Web.Controllers
 {
+    [DisplayName("Pracovní místa")]
+    [Description("Správa pracovních míst")]
     public class WorkspaceController : Controller
     {
         private readonly IWorkspaceRepository _workspaceRepository;
@@ -21,8 +24,10 @@ namespace BOJ0043_Web.Controllers
             _coworkingSpaceRepository = coworkingSpaceRepository;
             _logger = logger;
         }        
-          // GET: Workspace
+        // GET: Workspace
         [Authorize(Policy = "RequireReadOnlyRole")]
+        [DisplayName("Seznam pracovních míst")]
+        [Description("Získá seznam všech pracovních míst")]
         public async Task<IActionResult> Index()
         {
             var workspaces = await _workspaceRepository.GetAllWithCoworkingSpaceAsync();
@@ -31,6 +36,8 @@ namespace BOJ0043_Web.Controllers
 
         // GET: Workspace/Details/5
         [Authorize(Policy = "RequireReadOnlyRole")]
+        [DisplayName("Detail pracovního místa")]
+        [Description("Zobrazí detail konkrétního pracovního místa včetně jeho historie stavu")]
         public async Task<IActionResult> Details(int id)
         {
             var workspace = await _workspaceRepository.GetWithCoworkingSpaceAsync(id);
@@ -44,6 +51,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: Workspace/Create
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Vytvoření pracovního místa - formulář")]
+        [Description("Zobrazí formulář pro vytvoření nového pracovního místa")]
         public async Task<IActionResult> Create()
         {
             ViewBag.CoworkingSpaces = new SelectList(
@@ -58,6 +67,8 @@ namespace BOJ0043_Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Vytvoření pracovního místa")]
+        [Description("Vytvoří nové pracovní místo podle zadaných údajů")]
         public async Task<IActionResult> Create(Workspace workspace)
         {
             if (ModelState.IsValid)
@@ -84,6 +95,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: Workspace/Edit/5
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Úprava pracovního místa - formulář")]
+        [Description("Zobrazí formulář pro úpravu existujícího pracovního místa")]
         public async Task<IActionResult> Edit(int id)
         {
             var workspace = await _workspaceRepository.GetByIdAsync(id);
@@ -99,10 +112,14 @@ namespace BOJ0043_Web.Controllers
                 workspace.CoworkingSpaceId
             );
             return View(workspace);
-        }          // POST: Workspace/Edit/5
+        } 
+        
+        // POST: Workspace/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Úprava pracovního místa")]
+        [Description("Uloží změny v údajích o pracovním místě")]
         public async Task<IActionResult> Edit(int id, Workspace workspace)
         {
             if (id != workspace.Id)
@@ -159,6 +176,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: Workspace/Delete/5
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Smazání pracovního místa - potvrzení")]
+        [Description("Zobrazí stránku pro potvrzení smazání pracovního místa")]
         public async Task<IActionResult> Delete(int id)
         {
             var workspace = await _workspaceRepository.GetWithCoworkingSpaceAsync(id);
@@ -173,6 +192,8 @@ namespace BOJ0043_Web.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Smazání pracovního místa")]
+        [Description("Provede smazání pracovního místa z databáze")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var workspace = await _workspaceRepository.GetByIdAsync(id);
@@ -188,6 +209,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: Workspace/StatusHistory/5
         [Authorize(Policy = "RequireReadOnlyRole")]
+        [DisplayName("Historie stavů pracovního místa")]
+        [Description("Zobrazí historii změn stavů pracovního místa")]
         public async Task<IActionResult> StatusHistory(int id)
         {
             var workspace = await _workspaceRepository.GetWithStatusHistoryAsync(id);
@@ -200,6 +223,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: Workspace/ChangeStatus/5
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Změna stavu pracovního místa - formulář")]
+        [Description("Zobrazí formulář pro změnu stavu pracovního místa")]
         public async Task<IActionResult> ChangeStatus(int id)
         {
             var workspace = await _workspaceRepository.GetByIdAsync(id);
@@ -216,6 +241,8 @@ namespace BOJ0043_Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Změna stavu pracovního místa")]
+        [Description("Provede změnu stavu pracovního místa a uloží ji do historie")]
         public async Task<IActionResult> ChangeStatus(int id, WorkspaceStatus newStatus, string comment)
         {
             try

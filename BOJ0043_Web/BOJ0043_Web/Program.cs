@@ -2,6 +2,7 @@ using BOJ0043_Web.Data;
 using BOJ0043_Web.Models;
 using BOJ0043_Web.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -40,13 +41,20 @@ namespace BOJ0043_Web
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddDefaultUI(); // Přidá výchozí UI pro Identity (přihlašování, registrace, atd.)
-                  // Přidání autorizace
+                  
+            // Přidání autorizace
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("RequireReadOnlyRole", policy => policy.RequireRole("ReadOnly", "Admin"));
             });
-                    // Nastavení invariantní kultury pro model binding
+                  
+            // Register IActionContextAccessor for API Documentation UI
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            builder.Services.AddHttpClient();
+            
+            // Nastavení invariantní kultury pro model binding
             builder.Services.AddMvc()
                 .AddMvcOptions(options =>
                 {

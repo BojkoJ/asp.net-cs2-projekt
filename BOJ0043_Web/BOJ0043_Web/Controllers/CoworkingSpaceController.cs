@@ -2,9 +2,12 @@ using BOJ0043_Web.Models;
 using BOJ0043_Web.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 
 namespace BOJ0043_Web.Controllers
 {
+    [DisplayName("Coworkingové prostory")]
+    [Description("Správa coworkingových prostorů")]
     public class CoworkingSpaceController : Controller
     {
         private readonly ICoworkingSpaceRepository _coworkingSpaceRepository;
@@ -23,6 +26,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: CoworkingSpace
         [Authorize(Policy = "RequireReadOnlyRole")]
+        [DisplayName("Seznam coworkingových prostorů")]
+        [Description("Získá seznam všech coworkingových prostorů")]
         public async Task<IActionResult> Index()
         {
             var spaces = await _coworkingSpaceRepository.GetAllAsync();
@@ -31,6 +36,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: CoworkingSpace/Details/5
         [Authorize(Policy = "RequireReadOnlyRole")]
+        [DisplayName("Detail coworkingového prostoru")]
+        [Description("Zobrazí detail konkrétního coworkingového prostoru včetně jeho pracovních míst")]
         public async Task<IActionResult> Details(int id)
         {
             var space = await _coworkingSpaceRepository.GetWithWorkspacesAsync(id);
@@ -44,6 +51,8 @@ namespace BOJ0043_Web.Controllers
 
         // GET: CoworkingSpace/Create
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Vytvoření coworkingového prostoru - formulář")]
+        [Description("Zobrazí formulář pro vytvoření nového coworkingového prostoru")]
         public IActionResult Create()
         {
             return View();
@@ -53,6 +62,8 @@ namespace BOJ0043_Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Vytvoření coworkingového prostoru")]
+        [Description("Vytvoří nový coworkingový prostor podle zadaných údajů")]
         public async Task<IActionResult> Create(CoworkingSpace coworkingSpace)
         {
             if (ModelState.IsValid)
@@ -66,6 +77,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: CoworkingSpace/Edit/5
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Úprava coworkingového prostoru - formulář")]
+        [Description("Zobrazí formulář pro úpravu existujícího coworkingového prostoru")]
         public async Task<IActionResult> Edit(int id)
         {
             var space = await _coworkingSpaceRepository.GetByIdAsync(id);
@@ -74,12 +87,14 @@ namespace BOJ0043_Web.Controllers
                 return NotFound();
             }
             return View(space);
-        }        
+        }
         
         // POST: CoworkingSpace/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Úprava coworkingového prostoru")]
+        [Description("Uloží změny v údajích o coworkingovém prostoru")]
         public async Task<IActionResult> Edit(int id, CoworkingSpace coworkingSpace)
         {
             if (id != coworkingSpace.Id)
@@ -98,6 +113,8 @@ namespace BOJ0043_Web.Controllers
         
         // GET: CoworkingSpace/Delete/5
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Smazání coworkingového prostoru - potvrzení")]
+        [Description("Zobrazí stránku pro potvrzení smazání coworkingového prostoru")]
         public async Task<IActionResult> Delete(int id)
         {
             var space = await _coworkingSpaceRepository.GetByIdAsync(id);
@@ -112,6 +129,8 @@ namespace BOJ0043_Web.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
+        [DisplayName("Smazání coworkingového prostoru")]
+        [Description("Provede smazání coworkingového prostoru z databáze")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var space = await _coworkingSpaceRepository.GetByIdAsync(id);
