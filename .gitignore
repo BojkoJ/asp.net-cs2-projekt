@@ -1,0 +1,3 @@
+# Přidáme vše co se týká Visual Stidia (nepotřebujeme)
+*.sln
+.vs

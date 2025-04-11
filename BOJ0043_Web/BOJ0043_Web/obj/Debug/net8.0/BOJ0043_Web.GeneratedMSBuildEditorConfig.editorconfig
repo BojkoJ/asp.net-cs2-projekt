@@ -1,0 +1,115 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = BOJ0043_Web
+build_property.RootNamespace = BOJ0043_Web
+build_property.ProjectDir = C:\Users\roryb\Desktop\CS_Projekt\BOJ0043_Web\BOJ0043_Web\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\roryb\Desktop\CS_Projekt\BOJ0043_Web\BOJ0043_Web
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/CoworkingSpace/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ293b3JraW5nU3BhY2VcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/CoworkingSpace/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ293b3JraW5nU3BhY2VcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/CoworkingSpace/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ293b3JraW5nU3BhY2VcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/CoworkingSpace/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ293b3JraW5nU3BhY2VcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/CoworkingSpace/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ293b3JraW5nU3BhY2VcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Reservation/Complete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXRpb25cQ29tcGxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Reservation/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXRpb25cQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Reservation/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXRpb25cRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Reservation/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXRpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Reservation/Statistics.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXRpb25cU3RhdGlzdGljcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Shared/_LoginPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Mb2dpblBhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Workspace/ChangeStatus.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya3NwYWNlXENoYW5nZVN0YXR1cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Workspace/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya3NwYWNlXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Workspace/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya3NwYWNlXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Workspace/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya3NwYWNlXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Workspace/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya3NwYWNlXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Workspace/StatusHistory.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcV29ya3NwYWNlXFN0YXR1c0hpc3RvcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/roryb/Desktop/CS_Projekt/BOJ0043_Web/BOJ0043_Web/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-bw9cby7oz9

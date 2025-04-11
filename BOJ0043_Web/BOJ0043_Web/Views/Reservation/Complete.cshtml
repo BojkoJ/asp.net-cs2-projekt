@@ -1,0 +1,50 @@
+@model BOJ0043_Web.Models.Reservation
+
+@{
+    ViewData["Title"] = "Ukončit rezervaci";
+}
+
+<h1>Ukončit rezervaci</h1>
+
+<div class="alert alert-warning">
+    <h3>Opravdu chcete ukončit tuto rezervaci?</h3>
+    <p>Ukončení rezervace nelze vzít zpět a pracovní místo bude nastaveno jako dostupné (pokud nemá jiné aktivní rezervace).</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Rezervace #@Model.Id</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Pracovní místo</dt>
+                    <dd class="col-sm-8">@Model.Workspace?.Name</dd>
+
+                    <dt class="col-sm-4">Coworkingový prostor</dt>
+                    <dd class="col-sm-8">@Model.Workspace?.CoworkingSpace?.Name</dd>
+
+                    <dt class="col-sm-4">Email zákazníka</dt>
+                    <dd class="col-sm-8">@Model.CustomerEmail</dd>
+
+                    <dt class="col-sm-4">Začátek rezervace</dt>
+                    <dd class="col-sm-8">@Model.StartTime.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4">Konec rezervace</dt>
+                    <dd class="col-sm-8">@Model.EndTime.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4">Celková cena</dt>
+                    <dd class="col-sm-8">@Model.TotalPrice Kč</dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <form asp-action="Complete">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-warning">Potvrdit ukončení</button>
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Zpět na detail</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

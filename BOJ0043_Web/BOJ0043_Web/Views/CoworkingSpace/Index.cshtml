@@ -1,0 +1,60 @@
+@model IEnumerable<BOJ0043_Web.Models.CoworkingSpace>
+
+@{
+    ViewData["Title"] = "Seznam coworkingových prostor";
+}
+
+<h1>Seznam coworkingových prostor</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Přidat nový prostor</a>
+    <a asp-action="Map" class="btn btn-info">Zobrazit na mapě</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Latitude)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Longitude)
+            </th>
+            <th>Počet míst</th>
+            <th>Akce</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Latitude)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Longitude)
+                </td>
+                <td>
+                    @(item.Workspaces?.Count() ?? 0)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Detail</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Upravit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Smazat</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

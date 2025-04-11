@@ -1,0 +1,126 @@
+@model BOJ0043_Web.Models.CoworkingSpace
+
+@{
+    ViewData["Title"] = "Detail coworkingového prostoru";
+}
+
+<h1>Detail coworkingového prostoru</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>@Model.Name</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Address)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Address)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Description)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Description)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Latitude)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Latitude)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Longitude)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Longitude)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PhoneNumber)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PhoneNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Email)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Email)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Website)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if (!string.IsNullOrEmpty(Model.Website))
+                        {
+                            <a href="@Model.Website" target="_blank">@Model.Website</a>
+                        }
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Upravit</a>
+                <a asp-action="Index" class="btn btn-secondary">Zpět na seznam</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Pracovní místa</h4>
+            </div>
+            <div class="card-body">
+                @if (Model.Workspaces != null && Model.Workspaces.Any())
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Název</th>
+                                <th>Stav</th>
+                                <th>Cena/h</th>
+                                <th>Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var workspace in Model.Workspaces)
+                            {
+                                <tr>
+                                    <td>@workspace.Name</td>
+                                    <td>
+                                        @switch (workspace.CurrentStatus)
+                                        {
+                                            case WorkspaceStatus.Available:
+                                                <span class="badge bg-success">Dostupné</span>
+                                                break;
+                                            case WorkspaceStatus.Occupied:
+                                                <span class="badge bg-danger">Obsazené</span>
+                                                break;
+                                            case WorkspaceStatus.Maintenance:
+                                                <span class="badge bg-warning">V údržbě</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@workspace.PricePerHour Kč</td>
+                                    <td>
+                                        <a asp-controller="Workspace" asp-action="Details" asp-route-id="@workspace.Id" class="btn btn-info btn-sm">Detail</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>Tento coworkingový prostor nemá žádná pracovní místa.</p>
+                }
+            </div>
+            <div class="card-footer">
+                <a asp-controller="Workspace" asp-action="Create" asp-route-coworkingSpaceId="@Model.Id" class="btn btn-primary">Přidat pracovní místo</a>
+            </div>
+        </div>
+    </div>
+</div>

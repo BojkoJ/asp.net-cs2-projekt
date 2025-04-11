@@ -1,0 +1,124 @@
+@model BOJ0043_Web.Models.Workspace
+
+@{
+    ViewData["Title"] = "Detail pracovního místa";
+}
+
+<h1>Detail pracovního místa</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>@Model.Name</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Name)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Name)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Description)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Description)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PricePerHour)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PricePerHour) Kč/h
+                    </dd>
+                    <dt class="col-sm-4">
+                        Coworkingový prostor
+                    </dt>
+                    <dd class="col-sm-8">
+                        <a asp-controller="CoworkingSpace" asp-action="Details" asp-route-id="@Model.CoworkingSpaceId">
+                            @Html.DisplayFor(model => model.CoworkingSpace.Name)
+                        </a>
+                    </dd>
+                    <dt class="col-sm-4">
+                        Aktuální stav
+                    </dt>
+                    <dd class="col-sm-8">
+                        @switch (Model.CurrentStatus)
+                        {
+                            case WorkspaceStatus.Available:
+                                <span class="badge bg-success">Dostupné</span>
+                                break;
+                            case WorkspaceStatus.Occupied:
+                                <span class="badge bg-danger">Obsazené</span>
+                                break;
+                            case WorkspaceStatus.Maintenance:
+                                <span class="badge bg-warning">V údržbě</span>
+                                break;
+                        }
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Upravit</a>
+                    <a asp-action="ChangeStatus" asp-route-id="@Model.Id" class="btn btn-primary">Změnit stav</a>
+                    <a asp-action="StatusHistory" asp-route-id="@Model.Id" class="btn btn-info">Historie stavů</a>
+                    <a asp-action="Index" class="btn btn-secondary">Zpět na seznam</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Aktuální rezervace</h4>
+            </div>
+            <div class="card-body">
+                @if (Model.Reservations != null && Model.Reservations.Any(r => !r.IsCompleted))
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Zákazník</th>
+                                <th>Od</th>
+                                <th>Do</th>
+                                <th>Cena</th>
+                                <th>Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var reservation in Model.Reservations.Where(r => !r.IsCompleted).OrderBy(r => r.StartTime))
+                            {
+                                <tr>
+                                    <td>@reservation.CustomerEmail</td>
+                                    <td>@reservation.StartTime.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@reservation.EndTime.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@reservation.TotalPrice Kč</td>
+                                    <td>
+                                        <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.Id" class="btn btn-info btn-sm">Detail</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>Toto pracovní místo nemá žádné aktivní rezervace.</p>
+                }
+            </div>
+            <div class="card-footer">
+                @if (Model.CurrentStatus == WorkspaceStatus.Available)
+                {
+                    <a asp-controller="Reservation" asp-action="Create" asp-route-workspaceId="@Model.Id" class="btn btn-success">Vytvořit rezervaci</a>
+                }
+                else
+                {
+                    <button class="btn btn-success" disabled>Vytvořit rezervaci (místo není dostupné)</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

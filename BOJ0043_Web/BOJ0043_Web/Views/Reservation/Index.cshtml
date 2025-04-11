@@ -1,0 +1,58 @@
+@model IEnumerable<BOJ0043_Web.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Seznam rezervací";
+}
+
+<h1>Seznam rezervací</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Vytvořit novou rezervaci</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Pracovní místo</th>
+            <th>Coworkingový prostor</th>
+            <th>Email zákazníka</th>
+            <th>Začátek</th>
+            <th>Konec</th>
+            <th>Celková cena</th>
+            <th>Stav</th>
+            <th>Akce</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderByDescending(r => r.StartTime))
+        {
+            <tr>
+                <td>@item.Workspace?.Name</td>
+                <td>@item.Workspace?.CoworkingSpace?.Name</td>
+                <td>@item.CustomerEmail</td>
+                <td>@item.StartTime.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@item.EndTime.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@item.TotalPrice Kč</td>
+                <td>
+                    @if (item.IsCompleted)
+                    {
+                        <span class="badge bg-secondary">Ukončeno</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Aktivní</span>
+                    }
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Detail</a>
+                        @if (!item.IsCompleted)
+                        {
+                            <a asp-action="Complete" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Ukončit</a>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

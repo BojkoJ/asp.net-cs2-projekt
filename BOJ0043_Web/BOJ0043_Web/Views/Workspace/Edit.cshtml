@@ -1,0 +1,78 @@
+@model BOJ0043_Web.Models.Workspace
+
+@{
+    ViewData["Title"] = "Upravit pracovní místo";
+}
+
+<h1>Upravit pracovní místo</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Úprava údajů o pracovním místě</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CurrentStatus" />
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Název</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Popis</label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PricePerHour" class="form-label">Cena za hodinu (Kč)</label>
+                        <input asp-for="PricePerHour" class="form-control" type="number" step="0.01" min="0" />
+                        <span asp-validation-for="PricePerHour" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CoworkingSpaceId" class="form-label">Coworkingový prostor</label>
+                        <select asp-for="CoworkingSpaceId" asp-items="ViewBag.CoworkingSpaces" class="form-select">
+                            <option value="">-- Vyberte coworkingový prostor --</option>
+                        </select>
+                        <span asp-validation-for="CoworkingSpaceId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Aktuální stav</label>
+                        <div>
+                            @switch (Model.CurrentStatus)
+                            {
+                                case WorkspaceStatus.Available:
+                                    <span class="badge bg-success">Dostupné</span>
+                                    break;
+                                case WorkspaceStatus.Occupied:
+                                    <span class="badge bg-danger">Obsazené</span>
+                                    break;
+                                case WorkspaceStatus.Maintenance:
+                                    <span class="badge bg-warning">V údržbě</span>
+                                    break;
+                            }
+                        </div>
+                        <small class="text-muted">Pro změnu stavu použijte tlačítko "Změnit stav" na stránce detailu.</small>
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">Uložit změny</button>
+                        <a asp-action="Index" class="btn btn-secondary">Zpět na seznam</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

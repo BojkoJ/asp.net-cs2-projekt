@@ -1,0 +1,88 @@
+@model BOJ0043_Web.Models.Workspace
+
+@{
+    ViewData["Title"] = "Historie stavů pracovního místa";
+}
+
+<h1>Historie stavů pracovního místa</h1>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>@Model.Name</h4>
+                <p class="mb-0">@Model.CoworkingSpace?.Name</p>
+            </div>
+            <div class="card-body">
+                <p>Aktuální stav: 
+                    @switch (Model.CurrentStatus)
+                    {
+                        case WorkspaceStatus.Available:
+                            <span class="badge bg-success">Dostupné</span>
+                            break;
+                        case WorkspaceStatus.Occupied:
+                            <span class="badge bg-danger">Obsazené</span>
+                            break;
+                        case WorkspaceStatus.Maintenance:
+                            <span class="badge bg-warning">V údržbě</span>
+                            break;
+                    }
+                </p>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Zpět na detail</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Historie změn stavů</h4>
+            </div>
+            <div class="card-body">
+                @if (Model.StatusHistory != null && Model.StatusHistory.Any())
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Datum a čas změny</th>
+                                <th>Stav</th>
+                                <th>Komentář</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var history in Model.StatusHistory.OrderByDescending(h => h.ChangedAt))
+                            {
+                                <tr>
+                                    <td>@history.ChangedAt.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                                    <td>
+                                        @switch (history.Status)
+                                        {
+                                            case WorkspaceStatus.Available:
+                                                <span class="badge bg-success">Dostupné</span>
+                                                break;
+                                            case WorkspaceStatus.Occupied:
+                                                <span class="badge bg-danger">Obsazené</span>
+                                                break;
+                                            case WorkspaceStatus.Maintenance:
+                                                <span class="badge bg-warning">V údržbě</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@history.Comment</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>Pro toto pracovní místo nejsou zaznamenány žádné změny stavu.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

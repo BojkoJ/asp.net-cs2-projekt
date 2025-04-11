@@ -1,0 +1,49 @@
+@model BOJ0043_Web.Models.CoworkingSpace
+
+@{
+    ViewData["Title"] = "Smazat coworkingový prostor";
+}
+
+<h1>Smazat coworkingový prostor</h1>
+
+<div class="alert alert-danger">
+    <h3>Opravdu chcete smazat tento coworkingový prostor?</h3>
+    <p>Smazáním se odstraní i všechna pracovní místa v tomto prostoru.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>@Model.Name</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Address)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Address)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Description)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Description)
+                    </dd>
+                    <dt class="col-sm-4">Počet pracovních míst</dt>
+                    <dd class="col-sm-8">
+                        @(Model.Workspaces?.Count() ?? 0)
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger">Potvrdit smazání</button>
+                    <a asp-action="Index" class="btn btn-secondary">Zpět na seznam</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

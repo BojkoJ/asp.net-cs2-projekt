@@ -1,0 +1,85 @@
+@model BOJ0043_Web.Models.Workspace
+
+@{
+    ViewData["Title"] = "Změna stavu pracovního místa";
+}
+
+<h1>Změna stavu pracovního místa</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>@Model.Name</h4>
+                <p class="mb-0">@Model.CoworkingSpace?.Name</p>
+            </div>
+            <div class="card-body">
+                <p>Aktuální stav: 
+                    @switch (Model.CurrentStatus)
+                    {
+                        case WorkspaceStatus.Available:
+                            <span class="badge bg-success">Dostupné</span>
+                            break;
+                        case WorkspaceStatus.Occupied:
+                            <span class="badge bg-danger">Obsazené</span>
+                            break;
+                        case WorkspaceStatus.Maintenance:
+                            <span class="badge bg-warning">V údržbě</span>
+                            break;
+                    }
+                </p>
+
+                <form asp-action="ChangeStatus">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Nový stav</label>
+                        <select name="newStatus" class="form-select">
+                            @if (Model.CurrentStatus == WorkspaceStatus.Available)
+                            {
+                                <option value="@WorkspaceStatus.Available" selected>Dostupné</option>
+                                <option value="@WorkspaceStatus.Maintenance">V údržbě</option>
+                            }
+                            else if (Model.CurrentStatus == WorkspaceStatus.Maintenance)
+                            {
+                                <option value="@WorkspaceStatus.Available">Dostupné</option>
+                                <option value="@WorkspaceStatus.Maintenance" selected>V údržbě</option>
+                            }
+                            else
+                            {
+                                <option value="@Model.CurrentStatus" selected disabled>
+                                    @(Model.CurrentStatus == WorkspaceStatus.Occupied ? "Obsazené" : Model.CurrentStatus.ToString())
+                                </option>
+                            }
+                        </select>
+                        <small class="text-muted">
+                            Stav lze měnit pouze mezi "Dostupné" a "V údržbě". 
+                            Stav "Obsazené" se nastavuje automaticky při vytvoření rezervace.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Komentář ke změně</label>
+                        <textarea name="comment" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    @if (Model.CurrentStatus == WorkspaceStatus.Occupied)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Pracovní místo je momentálně obsazené a jeho stav nelze ručně změnit.
+                            Stav se automaticky změní na "Dostupné" po ukončení rezervace.
+                        </div>
+                        <button type="submit" class="btn btn-primary" disabled>Změnit stav</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-primary">Změnit stav</button>
+                    }
+                    
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Zpět na detail</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

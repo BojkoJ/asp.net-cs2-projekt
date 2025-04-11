@@ -1,0 +1,71 @@
+@model BOJ0043_Web.Models.Reservation
+
+@{
+    ViewData["Title"] = "Vytvořit rezervaci";
+}
+
+<h1>Vytvořit novou rezervaci</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Vyplňte údaje o nové rezervaci</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="WorkspaceId" class="form-label">Pracovní místo</label>
+                        <select asp-for="WorkspaceId" asp-items="ViewBag.Workspaces" class="form-select">
+                            <option value="">-- Vyberte pracovní místo --</option>
+                        </select>
+                        <span asp-validation-for="WorkspaceId" class="text-danger"></span>
+                        <small class="text-muted">Zobrazena jsou pouze dostupná pracovní místa.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CustomerEmail" class="form-label">Email zákazníka</label>
+                        <input asp-for="CustomerEmail" class="form-control" type="email" />
+                        <span asp-validation-for="CustomerEmail" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CustomerName" class="form-label">Jméno zákazníka (nepovinné)</label>
+                        <input asp-for="CustomerName" class="form-control" />
+                        <span asp-validation-for="CustomerName" class="text-danger"></span>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="StartTime" class="form-label">Začátek rezervace</label>
+                            <input asp-for="StartTime" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="EndTime" class="form-label">Konec rezervace</label>
+                            <input asp-for="EndTime" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Note" class="form-label">Poznámka (nepovinné)</label>
+                        <textarea asp-for="Note" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Note" class="text-danger"></span>
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">Vytvořit rezervaci</button>
+                        <a asp-action="Index" class="btn btn-secondary">Zpět na seznam</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

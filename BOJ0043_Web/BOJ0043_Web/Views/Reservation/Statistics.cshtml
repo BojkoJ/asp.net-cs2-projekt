@@ -1,0 +1,85 @@
+@model Dictionary<int, int>
+
+@{
+    ViewData["Title"] = "Statistiky rezervací";
+}
+
+<h1>Statistiky rezervací</h1>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Výběr období</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Statistics" method="post">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label class="form-label">Od:</label>
+                                <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label class="form-label">Do:</label>
+                                <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary mb-3">Aplikovat</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Počet ukončených rezervací podle coworkingových prostor</h5>
+            </div>
+            <div class="card-body">
+                @if (Model != null && Model.Count > 0)
+                {
+                    <div class="chart-container" style="height: 400px;">
+                        <!-- Zde bude později umístěn graf -->
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Coworkingový prostor</th>
+                                    <th>Počet ukončených rezervací</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="CoworkingSpace" asp-action="Details" asp-route-id="@item.Key">
+                                                Prostor #@item.Key
+                                            </a>
+                                        </td>
+                                        <td>@item.Value</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p>Pro vybrané období nejsou k dispozici žádná data.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Zde později přidáme skripty pro grafy -->
+}

@@ -1,0 +1,87 @@
+@model BOJ0043_Web.Models.Reservation
+
+@{
+    ViewData["Title"] = "Detail rezervace";
+}
+
+<h1>Detail rezervace</h1>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Rezervace #@Model.Id</h4>
+                <div>
+                    @if (Model.IsCompleted)
+                    {
+                        <span class="badge bg-secondary">Ukončeno</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Aktivní</span>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Pracovní místo</dt>
+                    <dd class="col-sm-8">
+                        <a asp-controller="Workspace" asp-action="Details" asp-route-id="@Model.WorkspaceId">
+                            @Model.Workspace?.Name
+                        </a>
+                    </dd>
+
+                    <dt class="col-sm-4">Coworkingový prostor</dt>
+                    <dd class="col-sm-8">
+                        <a asp-controller="CoworkingSpace" asp-action="Details" asp-route-id="@Model.Workspace?.CoworkingSpaceId">
+                            @Model.Workspace?.CoworkingSpace?.Name
+                        </a>
+                    </dd>
+
+                    <dt class="col-sm-4">Email zákazníka</dt>
+                    <dd class="col-sm-8">@Model.CustomerEmail</dd>
+
+                    <dt class="col-sm-4">Jméno zákazníka</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.CustomerName) ? "-" : Model.CustomerName)</dd>
+
+                    <dt class="col-sm-4">Začátek rezervace</dt>
+                    <dd class="col-sm-8">@Model.StartTime.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4">Konec rezervace</dt>
+                    <dd class="col-sm-8">@Model.EndTime.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4">Délka rezervace</dt>
+                    <dd class="col-sm-8">@Model.DurationHours.ToString("F1") hodin</dd>
+
+                    <dt class="col-sm-4">Cena za hodinu</dt>
+                    <dd class="col-sm-8">@Model.Workspace?.PricePerHour Kč</dd>
+
+                    <dt class="col-sm-4">Celková cena</dt>
+                    <dd class="col-sm-8">@Model.TotalPrice Kč</dd>
+
+                    <dt class="col-sm-4">Poznámka</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Note) ? "-" : Model.Note)</dd>
+
+                    <dt class="col-sm-4">Vytvořeno</dt>
+                    <dd class="col-sm-8">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group">
+                    @if (!Model.IsCompleted)
+                    {
+                        <a asp-action="Complete" asp-route-id="@Model.Id" class="btn btn-warning">Ukončit rezervaci</a>
+                    }
+                    <a asp-action="Index" class="btn btn-secondary">Zpět na seznam</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
