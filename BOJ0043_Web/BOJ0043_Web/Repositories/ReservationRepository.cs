@@ -131,17 +131,79 @@ namespace BOJ0043_Web.Repositories
             await SaveChangesAsync();
         }
 
-        public async Task<Dictionary<int, int>> GetReservationStatisticsAsync(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<Reservation>> GetAllWithWorkspaceAndCoworkingSpaceAsync()
+        {
+            return await _context.Reservations
+                .Include(r => r.Workspace)
+                .ThenInclude(w => w.CoworkingSpace)
+                .OrderByDescending(r => r.StartTime)
+                .ToListAsync();
+        }
+
+        public async Task<Dictionary<int, (string Name, int Count)>> GetReservationStatisticsAsync(DateTime startDate, DateTime endDate)
         {
             var completedReservations = await _context.Reservations
                 .Where(r => r.IsCompleted && r.EndTime >= startDate && r.EndTime <= endDate)
                 .Include(r => r.Workspace)
+                .ThenInclude(w => w.CoworkingSpace)
                 .ToListAsync();
 
             // Seskupíme rezervace podle coworkingového prostoru a spočítáme jejich počet
-            return completedReservations
-                .GroupBy(r => r.Workspace.CoworkingSpaceId)
-                .ToDictionary(g => g.Key, g => g.Count());
+            var result = new Dictionary<int, (string Name, int Count)>();
+            
+            foreach (var group in completedReservations.GroupBy(r => r.Workspace.CoworkingSpaceId))
+            {
+                // Získáme jméno coworkingového prostoru z první rezervace ve skupině
+                var spaceName = group.FirstOrDefault()?.Workspace?.CoworkingSpace?.Name ?? "Neznámý prostor";
+                result.Add(group.Key, (spaceName, group.Count()));
+            }
+            
+            return result;
+        }
+
+        public async Task<int> AutoCompleteExpiredReservationsAsync()
+        {
+            // Najdeme všechny neukončené rezervace, jejichž čas konce již uplynul
+            var expiredReservations = await _context.Reservations
+                .Where(r => !r.IsCompleted && r.EndTime < DateTime.Now)
+                .ToListAsync();
+
+            int completedCount = 0;
+
+            foreach (var reservation in expiredReservations)
+            {
+                try
+                {
+                    // Ukončíme rezervaci
+                    reservation.IsCompleted = true;
+                    _context.Reservations.Update(reservation);
+
+                    // Zkontrolujeme, zda má pracovní místo ještě jiné aktivní rezervace
+                    var hasActiveReservations = await _context.Reservations
+                        .Where(r => r.WorkspaceId == reservation.WorkspaceId && !r.IsCompleted && r.Id != reservation.Id)
+                        .AnyAsync();
+
+                    // Pokud nemá jiné aktivní rezervace, změníme stav na "Dostupné"
+                    if (!hasActiveReservations)
+                    {
+                        await _workspaceRepository.ChangeStatusAsync(
+                            reservation.WorkspaceId,
+                            WorkspaceStatus.Available,
+                            $"Automatické ukončení rezervace pro {reservation.CustomerEmail}"
+                        );
+                    }
+
+                    completedCount++;
+                }
+                catch (Exception)
+                {
+                    // Pokračujeme s dalšími rezervacemi i v případě chyby
+                    continue;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return completedCount;
         }
     }
 }

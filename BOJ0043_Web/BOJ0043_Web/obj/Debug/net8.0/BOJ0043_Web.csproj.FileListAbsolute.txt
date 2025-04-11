@@ -128,3 +128,4 @@ C:\Users\roryb\Desktop\CS_Projekt\BOJ0043_Web\BOJ0043_Web\obj\Debug\net8.0\ref\B
 C:\Users\roryb\Desktop\CS_Projekt\BOJ0043_Web\BOJ0043_Web\obj\Debug\net8.0\BOJ0043_Web.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\roryb\Desktop\CS_Projekt\BOJ0043_Web\BOJ0043_Web\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\roryb\Desktop\CS_Projekt\BOJ0043_Web\BOJ0043_Web\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.UI.dll
+C:\Users\roryb\Desktop\CS_Projekt\BOJ0043_Web\BOJ0043_Web\obj\Debug\net8.0\BOJ0043_Web.sourcelink.json

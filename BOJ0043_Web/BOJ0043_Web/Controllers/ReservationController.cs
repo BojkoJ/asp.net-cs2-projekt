@@ -20,24 +20,32 @@ namespace BOJ0043_Web.Controllers
             _reservationRepository = reservationRepository;
             _workspaceRepository = workspaceRepository;
             _logger = logger;
-        }        // GET: Reservation
+        }        
+        
+        // GET: Reservation
         [Authorize(Policy = "RequireReadOnlyRole")]
         public async Task<IActionResult> Index()
         {
-            var reservations = await _reservationRepository.GetAllAsync();
+            var reservations = await _reservationRepository.GetAllWithWorkspaceAndCoworkingSpaceAsync();
+            _reservationRepository.AutoCompleteExpiredReservationsAsync();
             return View(reservations);
-        }        // GET: Reservation/Details/5
+        }
+        
+        // GET: Reservation/Details/5
         [Authorize(Policy = "RequireReadOnlyRole")]
         public async Task<IActionResult> Details(int id)
         {
             var reservation = await _reservationRepository.GetWithWorkspaceAsync(id);
+            _reservationRepository.AutoCompleteExpiredReservationsAsync();
             if (reservation == null)
             {
                 return NotFound();
             }
 
             return View(reservation);
-        }        // GET: Reservation/Create
+        }        
+        
+        // GET: Reservation/Create
         // Může obsahovat parametr workspaceId pro předvyplnění formuláře
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Create(int? workspaceId)
@@ -65,7 +73,9 @@ namespace BOJ0043_Web.Controllers
             }
 
             return View(model);
-        }        // POST: Reservation/Create
+        }        
+        
+        // POST: Reservation/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
@@ -105,7 +115,9 @@ namespace BOJ0043_Web.Controllers
                 reservation.WorkspaceId
             );
             return View(reservation);
-        }        // GET: Reservation/Complete/5
+        }        
+        
+        // GET: Reservation/Complete/5
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Complete(int id)
         {
@@ -122,7 +134,9 @@ namespace BOJ0043_Web.Controllers
             }
 
             return View(reservation);
-        }        // POST: Reservation/Complete/5
+        }        
+        
+        // POST: Reservation/Complete/5
         [HttpPost, ActionName("Complete")]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
@@ -139,10 +153,13 @@ namespace BOJ0043_Web.Controllers
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("Details", new { id });
             }
-        }        // GET: Reservation/Statistics
+        }        
+        
+        // GET: Reservation/Statistics
         [Authorize(Policy = "RequireReadOnlyRole")]
         public async Task<IActionResult> Statistics()
         {
+            _reservationRepository.AutoCompleteExpiredReservationsAsync();
             // Výchozí období - poslední měsíc
             var endDate = DateTime.Now;
             var startDate = endDate.AddMonths(-1);
@@ -153,7 +170,9 @@ namespace BOJ0043_Web.Controllers
             ViewBag.EndDate = endDate.ToString("yyyy-MM-dd");
             
             return View(statistics);
-        }        // POST: Reservation/Statistics
+        }        
+        
+        // POST: Reservation/Statistics
         [HttpPost]
         [Authorize(Policy = "RequireReadOnlyRole")]
         public async Task<IActionResult> Statistics(DateTime startDate, DateTime endDate)

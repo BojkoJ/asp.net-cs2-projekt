@@ -12,12 +12,15 @@ namespace BOJ0043_Web.Repositories
         /// <summary>
         /// Získá pracovní místo včetně historie stavů
         /// </summary>
-        Task<Workspace?> GetWithStatusHistoryAsync(int id);
-
-        /// <summary>
+        Task<Workspace?> GetWithStatusHistoryAsync(int id);        /// <summary>
         /// Získá všechna pracovní místa v daném coworkingovém prostoru
         /// </summary>
         Task<IEnumerable<Workspace>> GetByCoworkingSpaceIdAsync(int coworkingSpaceId);
+        
+        /// <summary>
+        /// Získá všechna pracovní místa včetně jejich coworkingových prostorů
+        /// </summary>
+        Task<IEnumerable<Workspace>> GetAllWithCoworkingSpaceAsync();
 
         /// <summary>
         /// Získá všechna dostupná pracovní místa v daném coworkingovém prostoru

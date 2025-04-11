@@ -20,11 +20,12 @@ namespace BOJ0043_Web.Controllers
             _workspaceRepository = workspaceRepository;
             _coworkingSpaceRepository = coworkingSpaceRepository;
             _logger = logger;
-        }        // GET: Workspace
+        }        
+          // GET: Workspace
         [Authorize(Policy = "RequireReadOnlyRole")]
         public async Task<IActionResult> Index()
         {
-            var workspaces = await _workspaceRepository.GetAllAsync();
+            var workspaces = await _workspaceRepository.GetAllWithCoworkingSpaceAsync();
             return View(workspaces);
         }
 
@@ -39,7 +40,9 @@ namespace BOJ0043_Web.Controllers
             }
 
             return View(workspace);
-        }        // GET: Workspace/Create
+        }        
+        
+        // GET: Workspace/Create
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Create()
         {
@@ -49,7 +52,9 @@ namespace BOJ0043_Web.Controllers
                 "Name"
             );
             return View();
-        }        // POST: Workspace/Create
+        }        
+        
+        // POST: Workspace/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
@@ -75,7 +80,9 @@ namespace BOJ0043_Web.Controllers
                 "Name"
             );
             return View(workspace);
-        }        // GET: Workspace/Edit/5
+        }        
+        
+        // GET: Workspace/Edit/5
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -92,7 +99,7 @@ namespace BOJ0043_Web.Controllers
                 workspace.CoworkingSpaceId
             );
             return View(workspace);
-        }        // POST: Workspace/Edit/5
+        }          // POST: Workspace/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
@@ -105,25 +112,40 @@ namespace BOJ0043_Web.Controllers
 
             if (ModelState.IsValid)
             {
-                // Získáme původní stav z databáze
-                var originalWorkspace = await _workspaceRepository.GetByIdAsync(id);
-                if (originalWorkspace == null)
+                try
                 {
-                    return NotFound();
+                    // Získáme původní stav z databáze
+                    var originalWorkspace = await _workspaceRepository.GetByIdAsync(id);
+                    if (originalWorkspace == null)
+                    {
+                        return NotFound();
+                    }
+                    
+                    // Aktualizujeme vlastnosti původního objektu
+                    originalWorkspace.Name = workspace.Name;
+                    originalWorkspace.Description = workspace.Description;
+                    originalWorkspace.PricePerHour = workspace.PricePerHour;
+                    originalWorkspace.CoworkingSpaceId = workspace.CoworkingSpaceId;
+                    
+                    // Pokud se změnil stav, zaznamenáme změnu do historie
+                    if (originalWorkspace.CurrentStatus != workspace.CurrentStatus)
+                    {
+                        await _workspaceRepository.ChangeStatusAsync(id, workspace.CurrentStatus, "Úprava pracovního místa");
+                    }
+                    else
+                    {
+                        // Použijeme původní objekt pro update - nepoužíváme UpdateAsync, který by způsobil attach entity
+                        // Místo toho rovnou uložíme změny, protože originalWorkspace je již sledován kontextem
+                        await _workspaceRepository.SaveChangesAsync();
+                    }
+                    
+                    return RedirectToAction(nameof(Index));
                 }
-                
-                // Pokud se změnil stav, zaznamenáme změnu do historie
-                if (originalWorkspace.CurrentStatus != workspace.CurrentStatus)
+                catch (Exception ex)
                 {
-                    await _workspaceRepository.ChangeStatusAsync(id, workspace.CurrentStatus, "Úprava pracovního místa");
+                    _logger.LogError(ex, "Chyba při aktualizaci pracovního místa");
+                    ModelState.AddModelError("", "Došlo k chybě při ukládání změn: " + ex.Message);
                 }
-                else
-                {
-                    await _workspaceRepository.UpdateAsync(workspace);
-                    await _workspaceRepository.SaveChangesAsync();
-                }
-                
-                return RedirectToAction(nameof(Index));
             }
             
             ViewBag.CoworkingSpaces = new SelectList(
@@ -133,7 +155,9 @@ namespace BOJ0043_Web.Controllers
                 workspace.CoworkingSpaceId
             );
             return View(workspace);
-        }        // GET: Workspace/Delete/5
+        }        
+        
+        // GET: Workspace/Delete/5
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -143,7 +167,9 @@ namespace BOJ0043_Web.Controllers
                 return NotFound();
             }
             return View(workspace);
-        }        // POST: Workspace/Delete/5
+        }        
+        
+        // POST: Workspace/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
@@ -158,7 +184,9 @@ namespace BOJ0043_Web.Controllers
             await _workspaceRepository.DeleteAsync(workspace);
             await _workspaceRepository.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }        // GET: Workspace/StatusHistory/5
+        }        
+        
+        // GET: Workspace/StatusHistory/5
         [Authorize(Policy = "RequireReadOnlyRole")]
         public async Task<IActionResult> StatusHistory(int id)
         {
@@ -168,7 +196,9 @@ namespace BOJ0043_Web.Controllers
                 return NotFound();
             }
             return View(workspace);
-        }        // GET: Workspace/ChangeStatus/5
+        }        
+        
+        // GET: Workspace/ChangeStatus/5
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> ChangeStatus(int id)
         {
@@ -180,7 +210,9 @@ namespace BOJ0043_Web.Controllers
             
             ViewBag.CurrentStatus = workspace.CurrentStatus;
             return View(workspace);
-        }        // POST: Workspace/ChangeStatus/5
+        }        
+        
+        // POST: Workspace/ChangeStatus/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]

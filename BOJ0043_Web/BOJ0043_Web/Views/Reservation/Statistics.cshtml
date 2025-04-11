@@ -1,4 +1,4 @@
-@model Dictionary<int, int>
+@model Dictionary<int, (string, int)>
 
 @{
     ViewData["Title"] = "Statistiky rezervací";
@@ -61,10 +61,10 @@
                                     <tr>
                                         <td>
                                             <a asp-controller="CoworkingSpace" asp-action="Details" asp-route-id="@item.Key">
-                                                Prostor #@item.Key
+                                               @item.Value.Item1
                                             </a>
                                         </td>
-                                        <td>@item.Value</td>
+                                        <td>@item.Value.Item2</td>
                                     </tr>
                                 }
                             </tbody>

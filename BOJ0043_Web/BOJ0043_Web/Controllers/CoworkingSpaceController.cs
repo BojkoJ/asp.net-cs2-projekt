@@ -19,13 +19,17 @@ namespace BOJ0043_Web.Controllers
             _coworkingSpaceRepository = coworkingSpaceRepository;
             _workspaceRepository = workspaceRepository;
             _logger = logger;
-        }        // GET: CoworkingSpace
+        }        
+        
+        // GET: CoworkingSpace
         [Authorize(Policy = "RequireReadOnlyRole")]
         public async Task<IActionResult> Index()
         {
             var spaces = await _coworkingSpaceRepository.GetAllAsync();
             return View(spaces);
-        }        // GET: CoworkingSpace/Details/5
+        }        
+        
+        // GET: CoworkingSpace/Details/5
         [Authorize(Policy = "RequireReadOnlyRole")]
         public async Task<IActionResult> Details(int id)
         {
@@ -43,7 +47,9 @@ namespace BOJ0043_Web.Controllers
         public IActionResult Create()
         {
             return View();
-        }        // POST: CoworkingSpace/Create
+        }        
+        
+        // POST: CoworkingSpace/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
@@ -56,7 +62,9 @@ namespace BOJ0043_Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(coworkingSpace);
-        }        // GET: CoworkingSpace/Edit/5
+        }        
+        
+        // GET: CoworkingSpace/Edit/5
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -66,7 +74,9 @@ namespace BOJ0043_Web.Controllers
                 return NotFound();
             }
             return View(space);
-        }        // POST: CoworkingSpace/Edit/5
+        }        
+        
+        // POST: CoworkingSpace/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
@@ -84,7 +94,9 @@ namespace BOJ0043_Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(coworkingSpace);
-        }        // GET: CoworkingSpace/Delete/5
+        }        
+        
+        // GET: CoworkingSpace/Delete/5
         [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -94,7 +106,9 @@ namespace BOJ0043_Web.Controllers
                 return NotFound();
             }
             return View(space);
-        }        // POST: CoworkingSpace/Delete/5
+        }        
+        
+        // POST: CoworkingSpace/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "RequireAdminRole")]
@@ -111,11 +125,6 @@ namespace BOJ0043_Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: CoworkingSpace/Map
-        public async Task<IActionResult> Map()
-        {
-            var spaces = await _coworkingSpaceRepository.GetAllWithAvailableWorkspacesCountAsync();
-            return View(spaces);
-        }
+
     }
 }

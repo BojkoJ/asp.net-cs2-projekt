@@ -40,14 +40,32 @@ namespace BOJ0043_Web
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddDefaultUI(); // Přidá výchozí UI pro Identity (přihlašování, registrace, atd.)
-                
-            // Přidání autorizace
+                  // Přidání autorizace
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("RequireReadOnlyRole", policy => policy.RequireRole("ReadOnly", "Admin"));
             });
-                  
+                    // Nastavení invariantní kultury pro model binding
+            builder.Services.AddMvc()
+                .AddMvcOptions(options =>
+                {
+                    // Přidání vlastního model binderu pro decimální hodnoty
+                    options.ModelBinderProviders.Insert(0, new Infrastructure.DecimalModelBinderProvider());
+                    
+                    options.ModelBindingMessageProvider.SetValueIsInvalidAccessor(
+                        (x) => $"Hodnota '{x}' není platná.");
+                })
+                .AddDataAnnotationsLocalization();
+
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[] { new System.Globalization.CultureInfo("en-US") };
+                options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
+            
             // Registrace repozitářů
             builder.Services.AddScoped<ICoworkingSpaceRepository, CoworkingSpaceRepository>();
             builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
@@ -61,16 +79,17 @@ namespace BOJ0043_Web
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
+            }            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            // Aplikace nastavení kultury/lokalizace
+            app.UseRequestLocalization();
+
             // Přidání middleware pro autentizaci a autorizaci
             app.UseAuthentication();
-            app.UseAuthorization();            
+            app.UseAuthorization();
             
             app.MapControllerRoute(
                 name: "default",

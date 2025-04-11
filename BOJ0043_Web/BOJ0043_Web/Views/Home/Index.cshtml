@@ -2,7 +2,94 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-4">
+    <h1 class="display-4">Coworkingové prostory</h1>
+    <p>Vítejte v aplikaci pro správu coworkingových prostor a pracovních míst.</p>
 </div>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="row">
+        <div class="col-12">
+            <div id="mapContainer" style="height: 500px; width: 100%; border-radius: 8px; margin-bottom: 20px;"></div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            // Inicializace mapy po načtení stránky
+            document.addEventListener('DOMContentLoaded', function () {
+                // Vytvoření mapy v elementu 'mapContainer' a nastavení výchozího pohledu na ČR
+                var map = L.map('mapContainer').setView([49.8, 15.5], 7);
+
+                // Přidání mapového podkladu OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                // Načtení dat o coworkingových prostorech
+                fetch('/Home/GetCoworkingSpacesForMap')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Pokud nejsou žádná data, zobrazíme zprávu
+                        if (data.length === 0) {
+                            document.getElementById('mapContainer').innerHTML = '<div class="alert alert-info">Žádné coworkingové prostory k zobrazení.</div>';
+                            return;
+                        }
+
+                        // Vytvoření markeru pro každý coworkingový prostor
+                        data.forEach(space => {
+                            // Vytvoření HTML pro popup s informacemi o prostoru
+                            var popupContent = `
+                                <div class="popup-content">
+                                    <h5>${space.name}</h5>
+                                    <p><strong>Adresa:</strong> ${space.address}</p>
+                                    <p><strong>Pracovní místa:</strong></p>
+                                    <ul>
+                                        <li style="color: green;">Dostupná: ${space.availableWorkspaces}</li>
+                                        <li style="color: red;">Obsazená: ${space.occupiedWorkspaces}</li>
+                                        <li style="color: orange;">V údržbě: ${space.maintenanceWorkspaces}</li>
+                                    </ul>
+                                    <a href="/CoworkingSpace/Details/${space.id}" class="btn btn-sm btn-primary text-white">Detail</a>
+                                </div>`;
+
+                            // Určení barvy markeru podle dostupnosti pracovních míst
+                            var markerColor = '#3388ff'; // výchozí modrá
+                            if (space.availableWorkspaces === 0) {
+                                markerColor = '#dc3545'; // červená, když nejsou dostupná místa
+                            } else if (space.availableWorkspaces < space.totalWorkspaces / 3) {
+                                markerColor = '#ffc107'; // žlutá, když je málo dostupných míst
+                                // žlutá pokud je dostupných míst méně než 1/3 celkového počtu pracovních míst
+                            } else {
+                                markerColor = '#28a745'; // zelená, když je dostatek dostupných míst
+                            }
+                            
+
+                            // Vytvoření vlastního markeru s barevným kolečkem
+                            var customIcon = L.divIcon({
+                                className: 'custom-marker',
+                                html: `<div style="background-color: ${markerColor}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white;"></div>`,
+                                iconSize: [20, 20],
+                                iconAnchor: [10, 10]
+                            });
+
+                            // Přidání markeru na mapu
+                            L.marker([space.latitude, space.longitude], { icon: customIcon })
+                                .addTo(map)
+                                .bindPopup(popupContent);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Chyba při načítání dat:', error);
+                        document.getElementById('mapContainer').innerHTML = '<div class="alert alert-danger">Nepodařilo se načíst data pro mapu.</div>';
+                    });
+            });
+        </script>
+    }
+}
+else
+{
+    <div class="alert alert-info">
+        Pro zobrazení mapy coworkingových prostor se prosím <a href="/Identity/Account/Login">přihlaste</a> nebo <a href="/Identity/Account/Register">zaregistrujte</a>.
+    </div>
+}

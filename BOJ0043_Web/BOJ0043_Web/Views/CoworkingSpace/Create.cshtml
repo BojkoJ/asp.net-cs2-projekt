@@ -32,17 +32,17 @@
                         <label asp-for="Description" class="form-label">Popis</label>
                         <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
-
-                    <div class="row mb-3">
+                    </div>                    <div class="row mb-3">
                         <div class="col-md-6">
                             <label asp-for="Latitude" class="form-label">Zeměpisná šířka (GPS)</label>
-                            <input asp-for="Latitude" class="form-control" step="0.000001" />
+                            <input asp-for="Latitude" class="form-control" type="text" />
+                            <small class="form-text text-muted">Zadejte hodnotu jako 50.085369423302176 (s desetinnou tečkou)</small>
                             <span asp-validation-for="Latitude" class="text-danger"></span>
                         </div>
                         <div class="col-md-6">
                             <label asp-for="Longitude" class="form-label">Zeměpisná délka (GPS)</label>
-                            <input asp-for="Longitude" class="form-control" step="0.000001" />
+                            <input asp-for="Longitude" class="form-control" type="text" />
+                            <small class="form-text text-muted">Zadejte hodnotu jako 14.426374485023674 (s desetinnou tečkou)</small>
                             <span asp-validation-for="Longitude" class="text-danger"></span>
                         </div>
                     </div>

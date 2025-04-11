@@ -15,18 +15,16 @@ namespace BOJ0043_Web.Models
 
         [Required(ErrorMessage = "Adresa je povinná")]
         [StringLength(200, ErrorMessage = "Adresa může mít maximálně 200 znaků")]
-        public string Address { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Popis je povinný")]
+        public string Address { get; set; } = string.Empty;        [Required(ErrorMessage = "Popis je povinný")]
         public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "GPS latitude je povinná")]
-        [Range(-90, 90, ErrorMessage = "GPS latitude musí být v rozmezí -90 až 90")]
-        public double Latitude { get; set; }
+        [Range(typeof(decimal), "-90", "90", ErrorMessage = "GPS latitude musí být v rozmezí -90 až 90")]
+        public decimal Latitude { get; set; }
 
         [Required(ErrorMessage = "GPS longitude je povinná")]
-        [Range(-180, 180, ErrorMessage = "GPS longitude musí být v rozmezí -180 až 180")]
-        public double Longitude { get; set; }
+        [Range(typeof(decimal), "-180", "180", ErrorMessage = "GPS longitude musí být v rozmezí -180 až 180")]
+        public decimal Longitude { get; set; }
 
         [Phone(ErrorMessage = "Neplatné telefonní číslo")]
         public string? PhoneNumber { get; set; }

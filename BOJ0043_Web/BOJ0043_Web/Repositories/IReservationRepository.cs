@@ -1,9 +1,13 @@
 using BOJ0043_Web.Models;
 
 namespace BOJ0043_Web.Repositories
-{
-    public interface IReservationRepository : IRepository<Reservation>
+{    public interface IReservationRepository : IRepository<Reservation>
     {
+        /// <summary>
+        /// Získá všechny rezervace včetně informací o pracovních místech a coworkingových prostorech
+        /// </summary>
+        Task<IEnumerable<Reservation>> GetAllWithWorkspaceAndCoworkingSpaceAsync();
+        
         /// <summary>
         /// Získá rezervaci včetně informací o pracovním místě
         /// </summary>
@@ -37,6 +41,12 @@ namespace BOJ0043_Web.Repositories
         /// <summary>
         /// Získá statistiku ukončených rezervací pro jednotlivé coworkingové prostory za určité období
         /// </summary>
-        Task<Dictionary<int, int>> GetReservationStatisticsAsync(DateTime startDate, DateTime endDate);
+        Task<Dictionary<int, (string Name, int Count)>> GetReservationStatisticsAsync(DateTime startDate, DateTime endDate);
+
+        /// <summary>
+        /// Automaticky ukončí všechny rezervace, jejichž čas konce již uplynul
+        /// </summary>
+        /// <returns>Počet ukončených rezervací</returns>
+        Task<int> AutoCompleteExpiredReservationsAsync();
     }
 }
