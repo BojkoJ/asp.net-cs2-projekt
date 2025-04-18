@@ -200,10 +200,19 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0"
-                           Text="Rezervace"
-                           FontWeight="Bold"
-                           Margin="0,0,0,5"/>
+                <StackPanel Orientation="Vertical"
+                            Margin="0,0,0,10">
+                    <Button Content="Vytvořit rezervaci"
+                            Command="{Binding CreateReservationCommand}"
+                            Margin="0,0,0,5"/>
+                    <Button Content="Zobrazit statistiky"
+                            Command="{Binding ShowStatisticsCommand}"
+                            Margin="0,0,0,5"/>
+                    <TextBlock Grid.Row="0"
+                               Text="Rezervace"
+                               FontWeight="Bold"
+                               Margin="0,0,0,5"/>
+                </StackPanel>
                 <ListView Grid.Row="1"
                           ItemsSource="{Binding Reservations}"
                           SelectedItem="{Binding SelectedReservation, Mode=TwoWay}"
@@ -221,7 +230,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Coworkingový Prostor: "
                                                FontSize="12"/>
-                                    <TextBlock Text="{Binding CoworkingSpace.Name}"
+                                    <TextBlock Text="{Binding Workspace.CoworkingSpace.Name}"
                                                FontSize="12"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
@@ -244,7 +253,18 @@
                                     <TextBlock Text="{Binding StatusText}"
                                                FontSize="12"/>
                                 </StackPanel>
-
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="0,5,0,0">
+                                    <Button Content="Detail"
+                                            Command="{Binding DataContext.ShowReservationDetailCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}"
+                                            Margin="0,0,5,0"/>
+                                    <Button Content="Ukončit"
+                                            Command="{Binding DataContext.CompleteReservationCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}"
+                                            Margin="0,0,5,0"
+                                            Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"/>
+                                </StackPanel>
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -252,4 +272,5 @@
             </Grid>
         </Grid>
     </Grid>
+
 </Window>

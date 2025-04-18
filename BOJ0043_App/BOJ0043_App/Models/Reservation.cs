@@ -23,9 +23,9 @@ namespace BOJ0043_App.Models
         private DateTime _createdAt = DateTime.Now;
 
 
-        public int Id 
-        { 
-            get => _id; 
+        public int Id
+        {
+            get => _id;
             set
             {
                 if (_id != value)
@@ -36,9 +36,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public string CustomerName 
-        { 
-            get => _customerName; 
+        public string CustomerName
+        {
+            get => _customerName;
             set
             {
                 if (_customerName != value)
@@ -49,9 +49,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public string Note 
-        { 
-            get => _note; 
+        public string Note
+        {
+            get => _note;
             set
             {
                 if (_note != value)
@@ -62,9 +62,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public DateTime CreatedAt 
-        { 
-            get => _createdAt; 
+        public DateTime CreatedAt
+        {
+            get => _createdAt;
             set
             {
                 if (_createdAt != value)
@@ -75,9 +75,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public double DurationHours 
-        { 
-            get => _durationHours; 
+        public double DurationHours
+        {
+            get => _durationHours;
             set
             {
                 if (_durationHours != value)
@@ -88,9 +88,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public decimal TotalPrice 
-        { 
-            get => _totalPrice; 
+        public decimal TotalPrice
+        {
+            get => _totalPrice;
             set
             {
                 if (_totalPrice != value)
@@ -101,9 +101,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public bool IsCompleted 
-        { 
-            get => _isCompleted; 
+        public bool IsCompleted
+        {
+            get => _isCompleted;
             set
             {
                 if (_isCompleted != value)
@@ -114,9 +114,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public int IdWorkspace 
-        { 
-            get => _workspaceId; 
+        public int IdWorkspace
+        {
+            get => _workspaceId;
             set
             {
                 if (_workspaceId != value)
@@ -127,9 +127,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public Workspace? Workspace 
-        { 
-            get => _workspace; 
+        public Workspace? Workspace
+        {
+            get => _workspace;
             set
             {
                 if (_workspace != value)
@@ -140,9 +140,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public string CustomerEmail 
-        { 
-            get => _customerEmail; 
+        public string CustomerEmail
+        {
+            get => _customerEmail;
             set
             {
                 if (_customerEmail != value)
@@ -152,10 +152,10 @@ namespace BOJ0043_App.Models
                 }
             }
         }
-        
-        public DateTime StartTime 
-        { 
-            get => _startTime; 
+
+        public DateTime StartTime
+        {
+            get => _startTime;
             set
             {
                 if (_startTime != value)
@@ -166,9 +166,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public DateTime EndTime 
-        { 
-            get => _endTime; 
+        public DateTime EndTime
+        {
+            get => _endTime;
             set
             {
                 if (_endTime != value)
@@ -181,9 +181,9 @@ namespace BOJ0043_App.Models
 
 
 
-        public int WorkspaceId 
-        { 
-            get => _workspaceId; 
+        public int WorkspaceId
+        {
+            get => _workspaceId;
             set
             {
                 if (_workspaceId != value)
@@ -198,6 +198,7 @@ namespace BOJ0043_App.Models
         public string FormattedTimeRange => $"{StartTime:dd.MM.yyyy HH:mm} - {EndTime:HH:mm}";
         public TimeSpan Duration => EndTime - StartTime;
         public string FormattedDuration => $"{Duration.TotalHours:F1} hodin";
+        public string StatusText => IsCompleted ? "Ukončeno" : "Aktivní";
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

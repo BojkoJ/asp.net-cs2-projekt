@@ -9,7 +9,11 @@ namespace BOJ0043_App
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value is bool b && b) ? Visibility.Visible : Visibility.Collapsed;
+            bool invert = parameter != null && parameter.ToString()?.ToLower() == "invert";
+            bool isVisible = value is bool b && b;
+            if (invert)
+                isVisible = !isVisible;
+            return isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

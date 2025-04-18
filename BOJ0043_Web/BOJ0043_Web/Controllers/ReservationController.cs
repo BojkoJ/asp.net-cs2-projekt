@@ -23,8 +23,8 @@ namespace BOJ0043_Web.Controllers
             _reservationRepository = reservationRepository;
             _workspaceRepository = workspaceRepository;
             _logger = logger;
-        }        
-        
+        }
+
         // GET: Reservation
         [Authorize(Policy = "RequireReadOnlyRole")]
         [DisplayName("Seznam rezervací")]
@@ -35,7 +35,7 @@ namespace BOJ0043_Web.Controllers
             _reservationRepository.AutoCompleteExpiredReservationsAsync();
             return View(reservations);
         }
-        
+
         // GET: Reservation/Details/5
         [Authorize(Policy = "RequireReadOnlyRole")]
         [DisplayName("Detail rezervace")]
@@ -50,8 +50,8 @@ namespace BOJ0043_Web.Controllers
             }
 
             return View(reservation);
-        }        
-        
+        }
+
         // GET: Reservation/Create
         // Může obsahovat parametr workspaceId pro předvyplnění formuláře
         [Authorize(Policy = "RequireAdminRole")]
@@ -82,8 +82,8 @@ namespace BOJ0043_Web.Controllers
             }
 
             return View(model);
-        }        
-        
+        }
+
         // POST: Reservation/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -126,8 +126,8 @@ namespace BOJ0043_Web.Controllers
                 reservation.WorkspaceId
             );
             return View(reservation);
-        }        
-        
+        }
+
         // GET: Reservation/Complete/5
         [Authorize(Policy = "RequireAdminRole")]
         [DisplayName("Ukončení rezervace - formulář")]
@@ -147,8 +147,8 @@ namespace BOJ0043_Web.Controllers
             }
 
             return View(reservation);
-        }        
-        
+        }
+
         // POST: Reservation/Complete/5
         [HttpPost, ActionName("Complete")]
         [ValidateAntiForgeryToken]
@@ -168,8 +168,8 @@ namespace BOJ0043_Web.Controllers
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("Details", new { id });
             }
-        }        
-        
+        }
+
         // GET: Reservation/Statistics
         [Authorize(Policy = "RequireReadOnlyRole")]
         [DisplayName("Statistiky rezervací")]
@@ -182,13 +182,13 @@ namespace BOJ0043_Web.Controllers
             var startDate = endDate.AddMonths(-1);
 
             var statistics = await _reservationRepository.GetReservationStatisticsAsync(startDate, endDate);
-            
+
             ViewBag.StartDate = startDate.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate.ToString("yyyy-MM-dd");
-            
+
             return View(statistics);
-        }        
-        
+        }
+
         // POST: Reservation/Statistics
         [HttpPost]
         [Authorize(Policy = "RequireReadOnlyRole")]
@@ -197,10 +197,10 @@ namespace BOJ0043_Web.Controllers
         public async Task<IActionResult> Statistics(DateTime startDate, DateTime endDate)
         {
             var statistics = await _reservationRepository.GetReservationStatisticsAsync(startDate, endDate);
-            
+
             ViewBag.StartDate = startDate.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate.ToString("yyyy-MM-dd");
-            
+
             return View(statistics);
         }
     }
@@ -301,6 +301,80 @@ namespace BOJ0043_Web.Controllers
                 return StatusCode(500, "Interní chyba serveru");
             }
         }
+
+        // POST: Reservation/CompleteApi/5
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> CompleteApi(int id)
+        {
+            try
+            {
+                await _reservationRepository.CompleteReservationAsync(id);
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Chyba při ukončování rezervace přes API (id={id})");
+                return StatusCode(500, new { success = false, error = ex.Message });
+            }
+        }
+
+        // POST: Reservation/CreateApi
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateApi([FromBody] Reservation reservation)
+        {
+            try
+            {
+                if (reservation == null)
+                {
+                    return BadRequest("Rezervace je prázdná.");
+                }
+
+                // Kontrola dostupnosti pracovního místa
+                if (!await _reservationRepository.IsWorkspaceAvailableAsync(
+                    reservation.WorkspaceId, reservation.StartTime, reservation.EndTime))
+                {
+                    return BadRequest("Vybrané pracovní místo není v požadovaném čase dostupné.");
+                }
+
+                await _reservationRepository.CreateReservationAsync(reservation);
+                await _reservationRepository.SaveChangesAsync();
+                // Return only a minimal DTO to avoid object cycles
+                return Ok(new { success = true, id = reservation.Id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Chyba při vytváření rezervace přes API");
+                return StatusCode(500, "Interní chyba serveru");
+            }
+        }
+
+        // POST: Reservation/StatisticsApi
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> StatisticsApi(DateTime StartDate, DateTime EndDate)
+        {
+            try
+            {
+                var statistics = await _reservationRepository.GetReservationStatisticsAsync(StartDate, EndDate);
+                // Convert statistics (Dictionary<int, (string Name, int Count)>) to Dictionary<string, int> with Name as key and Count as value
+                var result = new Dictionary<string, int>();
+                foreach (var item in statistics)
+                {
+                    var name = item.Value.Name;
+                    var count = item.Value.Count;
+                    result[name] = count;
+                }
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Chyba při získávání statistik rezervací přes API");
+                return StatusCode(500, "Interní chyba serveru");
+            }
+        }
+
         #endregion
     }
 }

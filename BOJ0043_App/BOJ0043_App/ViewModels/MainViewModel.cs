@@ -33,6 +33,10 @@ namespace BOJ0043_App.ViewModels
         public ICommand ShowStatusHistoryCommand { get; private set; }
         public ICommand ChangeStatusCommand { get; private set; }
         public ICommand AddNewWorkspaceCommand { get; private set; }
+        public ICommand ShowReservationDetailCommand { get; private set; }
+        public ICommand CompleteReservationCommand { get; private set; }
+        public ICommand CreateReservationCommand { get; private set; }
+        public ICommand ShowStatisticsCommand { get; private set; }
 
         public MainViewModel()
         {
@@ -57,6 +61,10 @@ namespace BOJ0043_App.ViewModels
             ShowStatusHistoryCommand = new Commands.RelayCommand(ShowStatusHistory);
             ChangeStatusCommand = new Commands.RelayCommand(ChangeStatus);
             AddNewWorkspaceCommand = new Commands.RelayCommand(_ => AddNewWorkspace());
+            ShowReservationDetailCommand = new Commands.RelayCommand(ShowReservationDetail);
+            CompleteReservationCommand = new Commands.RelayCommand(CompleteReservation);
+            CreateReservationCommand = new Commands.RelayCommand(_ => CreateReservation());
+            ShowStatisticsCommand = new Commands.RelayCommand(_ => new Views.StatisticsWindow().ShowDialog());
 
             // Načtení dat při startu
             _ = LoadDataAsync();
@@ -196,6 +204,15 @@ namespace BOJ0043_App.ViewModels
                 var reservations = await _reservationService.GetReservationsByWorkspaceIdAsync(workspaceId);
                 if (reservations != null)
                 {
+                    // Map Workspace and CoworkingSpace for each reservation
+                    foreach (var res in reservations)
+                    {
+                        res.Workspace = Workspaces.FirstOrDefault(w => w.Id == res.WorkspaceId);
+                        if (res.Workspace != null)
+                        {
+                            res.Workspace.CoworkingSpace = CoworkingSpaces.FirstOrDefault(cs => cs.Id == res.Workspace.CoworkingSpaceId);
+                        }
+                    }
                     Reservations = new ObservableCollection<Reservation>(reservations);
                     StatusMessage = $"Načteno {reservations.Count} rezervací";
                 }
@@ -386,5 +403,86 @@ namespace BOJ0043_App.ViewModels
                 }
             }
         }
+
+        private void ShowReservationDetail(object? parameter)
+        {
+            if (parameter is Reservation reservation)
+            {
+                var window = new Views.ReservationDetailWindow(reservation);
+                window.ShowDialog();
+            }
+        }
+
+        private async void CompleteReservation(object? parameter)
+        {
+            if (parameter is Reservation reservation && !reservation.IsCompleted)
+            {
+                var result = System.Windows.MessageBox.Show(
+                    "Opravdu chcete ukončit tuto rezervaci? Pracovní místo bude nastaveno jako dostupné.",
+                    "Potvrzení ukončení",
+                    System.Windows.MessageBoxButton.YesNo,
+                    System.Windows.MessageBoxImage.Warning);
+                if (result == System.Windows.MessageBoxResult.Yes)
+                {
+                    // Call backend API to complete reservation
+                    bool success = await _reservationService.CompleteReservationAsync(reservation.Id);
+                    if (success)
+                    {
+                        reservation.IsCompleted = true;
+                        if (reservation.Workspace != null)
+                        {
+                            reservation.Workspace.CurrentStatus = 0; // Dostupné
+                        }
+                        // Refresh list
+                        if (SelectedWorkspace != null)
+                            await LoadReservationsForWorkspaceAsync(SelectedWorkspace.Id);
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("Nepodařilo se ukončit rezervaci na serveru.", "Chyba", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
+        private void CreateReservation()
+        {
+            var window = new Views.ReservationCreateWindow(Workspaces);
+            if (window.ShowDialog() == true && window.CreatedReservation != null)
+            {
+                // Call backend to create reservation
+                _ = CreateReservationAsync(window.CreatedReservation);
+            }
+        }
+
+        private async Task CreateReservationAsync(Reservation reservation)
+        {
+            try
+            {
+                var created = await _reservationService.CreateReservationAsync(reservation);
+                if (created != null)
+                {
+                    StatusMessage = "Rezervace byla úspěšně vytvořena.";
+                    if (SelectedWorkspace != null)
+                        await LoadReservationsForWorkspaceAsync(SelectedWorkspace.Id);
+                }
+                else
+                {
+                    StatusMessage = "Nepodařilo se vytvořit rezervaci.";
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Chyba při vytváření rezervace: {ex.Message}";
+            }
+        }
+
+        private void ShowStatistics()
+        {
+            var window = new Views.StatisticsWindow();
+            window.ShowDialog();
+        }
+
+
     }
 }
