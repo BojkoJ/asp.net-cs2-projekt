@@ -1,0 +1,24 @@
+<Window x:Class="BOJ0043_App.Views.WorkspaceChangeStatusWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:BOJ0043_App"
+        Title="Změna stavu" Height="450" Width="400">
+    <Window.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
+    <Grid Margin="20">
+        <StackPanel>
+            <TextBlock Text="Změna stavu pracovního místa" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+            <TextBlock Text="Aktuální stav:" FontWeight="Bold"/>
+            <TextBlock Text="{Binding CurrentStatusText}" Margin="0,0,0,10"/>
+            <TextBlock Text="{Binding OccupiedWarning}" Foreground="OrangeRed" FontWeight="Bold" TextWrapping="Wrap" Visibility="{Binding IsOccupied, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,0,10"/>
+            <StackPanel Visibility="{Binding CanChangeStatus, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Text="Nový stav:" FontWeight="Bold"/>
+                <ComboBox ItemsSource="{Binding AvailableStatuses}" SelectedItem="{Binding SelectedStatus}" Margin="0,0,0,10"/>
+                <TextBlock Text="Komentář:" FontWeight="Bold"/>
+                <TextBox Text="{Binding StatusChangeComment}" Margin="0,0,0,10"/>
+                <Button Content="Uložit" Width="100" HorizontalAlignment="Right" Click="SaveButton_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

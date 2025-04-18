@@ -31,5 +31,11 @@ namespace BOJ0043_Web.Repositories
         /// Změní stav pracovního místa a zaznamená změnu do historie
         /// </summary>
         Task ChangeStatusAsync(int id, WorkspaceStatus newStatus, string? comment = null);
+
+        /// <summary>
+        /// Získá pracovní místo včetně rezervací
+        /// </summary>
+        
+        Task <Workspace?> GetWithReservationsAsync(int id);
     }
 }

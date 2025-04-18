@@ -11,11 +11,28 @@ namespace BOJ0043_Web
     public class Program
     {
         public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        {            var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            
+            // Přidání podpory pro API s JSON formátováním
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.WriteIndented = true;
+            });
+            
+            // Konfigurace CORS pro komunikaci s desktopovou aplikací
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
             
             // Konfigurace SQLite databáze
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -91,6 +108,9 @@ namespace BOJ0043_Web
             app.UseStaticFiles();
 
             app.UseRouting();
+            
+            // Povolení CORS
+            app.UseCors("AllowLocalhost");
 
             // Aplikace nastavení kultury/lokalizace
             app.UseRequestLocalization();
@@ -98,10 +118,14 @@ namespace BOJ0043_Web
             // Přidání middleware pro autentizaci a autorizaci
             app.UseAuthentication();
             app.UseAuthorization();
-            
-            app.MapControllerRoute(
+              app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+                
+            // Mapování API endpointů
+            app.MapControllerRoute(
+                name: "api",
+                pattern: "api/{controller=Home}/{action=Index}/{id?}");
                 
             // Mapování Identity stránek (přihlášení, registrace, atd.)
             app.MapRazorPages();

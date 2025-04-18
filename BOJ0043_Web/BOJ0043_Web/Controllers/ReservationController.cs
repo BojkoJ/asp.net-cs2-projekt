@@ -9,7 +9,7 @@ namespace BOJ0043_Web.Controllers
 {
     [DisplayName("Rezervace")]
     [Description("Správa rezervací pracovních míst")]
-    public class ReservationController : Controller
+    public partial class ReservationController : Controller
     {
         private readonly IReservationRepository _reservationRepository;
         private readonly IWorkspaceRepository _workspaceRepository;
@@ -223,5 +223,84 @@ namespace BOJ0043_Web.Controllers
 
             return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, minute, 0);
         }
+    }
+
+    public partial class ReservationController
+    {
+        #region API metody pro WPF aplikaci
+
+        // GET: Reservation/GetAll
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Reservation>>> GetAll()
+        {
+            try
+            {
+                var reservations = await _reservationRepository.GetAllWithWorkspaceAndCoworkingSpaceAsync();
+                return Json(reservations);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Chyba při získávání seznamu rezervací");
+                return StatusCode(500, "Interní chyba serveru");
+            }
+        }
+
+        // GET: Reservation/GetById/5
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult<Reservation>> GetById(int id)
+        {
+            try
+            {
+                var reservation = await _reservationRepository.GetWithWorkspaceAsync(id);
+                if (reservation == null)
+                {
+                    return NotFound();
+                }
+                return Json(reservation);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Chyba při získávání rezervace s ID {id}");
+                return StatusCode(500, "Interní chyba serveru");
+            }
+        }
+
+        // GET: Reservation/GetByWorkspaceId/5
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Reservation>>> GetByWorkspaceId(int workspaceId)
+        {
+            try
+            {
+                var reservations = await _reservationRepository.GetByWorkspaceIdAsync(workspaceId);
+                return Json(reservations);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Chyba při získávání rezervací pro pracovní místo s ID {workspaceId}");
+                return StatusCode(500, "Interní chyba serveru");
+            }
+        }
+
+        // GET: Reservation/GetActiveByWorkspaceId/5
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Reservation>>> GetActiveByWorkspaceId(int workspaceId)
+        {
+            Console.WriteLine($"[DEBUG] Controller: GetActiveByWorkspaceId called with workspaceId: {workspaceId}");
+            try
+            {
+                var reservations = await _reservationRepository.GetActiveByWorkspaceIdAsync(workspaceId);
+                return Json(reservations);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Chyba při získávání aktivních rezervací pro pracovní místo s ID {workspaceId}");
+                return StatusCode(500, "Interní chyba serveru");
+            }
+        }
+        #endregion
     }
 }

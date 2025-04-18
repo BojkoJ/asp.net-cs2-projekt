@@ -24,6 +24,13 @@ namespace BOJ0043_Web.Repositories
                 .FirstOrDefaultAsync(w => w.Id == id);
         }
 
+        public async Task<Workspace?> GetWithReservationsAsync(int id)
+        {
+            return await _context.Workspaces
+                .Include(w => w.Reservations)
+                .FirstOrDefaultAsync(w => w.Id == id);
+        }
+
         public async Task<IEnumerable<Workspace>> GetByCoworkingSpaceIdAsync(int coworkingSpaceId)
         {
             return await _context.Workspaces
