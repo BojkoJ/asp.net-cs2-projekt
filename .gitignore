@@ -1,3 +1,7 @@
 # Přidáme vše co se týká Visual Stidia (nepotřebujeme)
 *.sln
 .vs
+bin
+obj
+*.db-shm
+*.db-wal
