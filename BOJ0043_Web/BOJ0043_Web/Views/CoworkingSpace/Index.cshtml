@@ -25,7 +25,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Longitude)
             </th>
-            <th>Počet míst</th>
             <th>Akce</th>
         </tr>
     </thead>
@@ -45,9 +44,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Longitude)
                 </td>
-                <td>
-                    @(item.Workspaces?.Count() ?? 0)
-                </td>
+
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Detail</a>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Upravit</a>

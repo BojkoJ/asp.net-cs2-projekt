@@ -19,9 +19,9 @@ namespace BOJ0043_App.Models
         private int _currentStatus = 0; // Available, Occupied, Maintenance
         private ObservableCollection<Reservation> _reservations = new ObservableCollection<Reservation>();
 
-        public int Id 
-        { 
-            get => _id; 
+        public int Id
+        {
+            get => _id;
             set
             {
                 if (_id != value)
@@ -32,9 +32,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public string Name 
-        { 
-            get => _name; 
+        public string Name
+        {
+            get => _name;
             set
             {
                 if (_name != value)
@@ -45,9 +45,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public string Description 
-        { 
-            get => _description; 
+        public string Description
+        {
+            get => _description;
             set
             {
                 if (_description != value)
@@ -58,9 +58,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public decimal PricePerHour 
-        { 
-            get => _pricePerHour; 
+        public decimal PricePerHour
+        {
+            get => _pricePerHour;
             set
             {
                 if (_pricePerHour != value)
@@ -71,9 +71,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public int CoworkingSpaceId 
-        { 
-            get => _coworkingSpaceId; 
+        public int CoworkingSpaceId
+        {
+            get => _coworkingSpaceId;
             set
             {
                 if (_coworkingSpaceId != value)
@@ -84,9 +84,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public CoworkingSpace? CoworkingSpace 
-        { 
-            get => _coworkingSpace; 
+        public CoworkingSpace? CoworkingSpace
+        {
+            get => _coworkingSpace;
             set
             {
                 if (_coworkingSpace != value)
@@ -96,8 +96,6 @@ namespace BOJ0043_App.Models
                 }
             }
         }
-
-
 
         public int CurrentStatus { get; set; } // 0 = Dostupné, 1 = Obsazené, 2 = V údržbě
 
@@ -115,9 +113,9 @@ namespace BOJ0043_App.Models
             }
         }
 
-        public ObservableCollection<Reservation> Reservations 
-        { 
-            get => _reservations; 
+        public ObservableCollection<Reservation> Reservations
+        {
+            get => _reservations;
             set
             {
                 if (_reservations != value)

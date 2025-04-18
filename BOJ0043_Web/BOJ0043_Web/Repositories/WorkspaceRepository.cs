@@ -36,15 +36,15 @@ namespace BOJ0043_Web.Repositories
             return await _context.Workspaces
                 .Where(w => w.CoworkingSpaceId == coworkingSpaceId)
                 .ToListAsync();
-        }        
-        
+        }
+
         public async Task<IEnumerable<Workspace>> GetAvailableByCoworkingSpaceIdAsync(int coworkingSpaceId)
         {
             return await _context.Workspaces
                 .Where(w => w.CoworkingSpaceId == coworkingSpaceId && w.CurrentStatus == WorkspaceStatus.Available)
                 .ToListAsync();
         }
-        
+
         public async Task<IEnumerable<Workspace>> GetAllWithCoworkingSpaceAsync()
         {
             return await _context.Workspaces

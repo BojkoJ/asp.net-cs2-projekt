@@ -162,6 +162,11 @@ namespace BOJ0043_App.ViewModels
                 var workspaces = await _workspaceService.GetWorkspacesByCoworkingSpaceIdAsync(coworkingSpaceId);
                 if (workspaces != null)
                 {
+                    // Map CoworkingSpace for each workspace
+                    foreach (var ws in workspaces)
+                    {
+                        ws.CoworkingSpace = CoworkingSpaces.FirstOrDefault(cs => cs.Id == ws.CoworkingSpaceId);
+                    }
                     Workspaces = new ObservableCollection<Workspace>(workspaces);
                     StatusMessage = $"Načteno {workspaces.Count} pracovních míst";
                 }

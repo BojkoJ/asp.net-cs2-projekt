@@ -62,10 +62,32 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="5">
-                                <TextBlock Text="{Binding Name}"
-                                           FontWeight="Bold"/>
-                                <TextBlock Text="{Binding Address}"
-                                           FontSize="12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Jméno: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding Name}"
+                                               FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+
+                                    <TextBlock Text="Addresa: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding Address}"
+                                               FontSize="12"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+
+                                    <TextBlock Text="Zeměpisná šířka: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding Latitude}"
+                                               FontSize="12"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Zeměpisná délka: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding Longitude}"
+                                               FontSize="12"/>
+                                </StackPanel>
                                 <StackPanel Orientation="Horizontal"
                                             Margin="0,5,0,0">
                                     <Button Content="Detail"
@@ -115,16 +137,32 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="5">
-                                <TextBlock Text="{Binding Name}"
-                                           FontWeight="Bold"/>
                                 <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Jméno: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding Name}"
+                                               FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Coworkingový Prostor: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding CoworkingSpace.Name}"
+                                               FontSize="12"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Cena za hodinu: "
+                                               FontSize="12"/>
                                     <TextBlock Text="{Binding PricePerHour, StringFormat='{}{0:N0}'}"
                                                FontSize="12"/>
                                     <TextBlock Text=" Kč/hod"
                                                FontSize="12"/>
                                 </StackPanel>
-                                <TextBlock Text="{Binding CurrentStatusText}"
-                                           FontSize="12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Aktuální stav: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding CurrentStatusText}"
+                                               FontSize="12"/>
+                                </StackPanel>
                                 <StackPanel Orientation="Horizontal"
                                             Margin="0,5,0,0">
                                     <Button Content="Detail"
@@ -174,38 +212,44 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="5">
-                                <TextBlock Text="{Binding UserName}"
-                                           FontWeight="Bold"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Pracovní místo: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding Workspace.Name}"
+                                               FontSize="12"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Coworkingový Prostor: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding CoworkingSpace.Name}"
+                                               FontSize="12"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Email zákazníka: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding CustomerEmail}"
+                                               FontSize="12"/>
+                                </StackPanel>
                                 <TextBlock Text="{Binding FormattedTimeRange}"
                                            FontSize="12"/>
-                                <TextBlock Text="{Binding FormattedDuration}"
-                                           FontSize="12"/>
-                                <TextBlock Text="{Binding Status}"
-                                           FontSize="12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Celková cena: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding TotalPrice, StringFormat='{}{0:N0}'}"
+                                               FontSize="12"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Stav: "
+                                               FontSize="12"/>
+                                    <TextBlock Text="{Binding StatusText}"
+                                               FontSize="12"/>
+                                </StackPanel>
+
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </Grid>
         </Grid>
-
-        <!-- Dolní panel - status bar -->
-        <StatusBar Grid.Row="2"
-                   Background="#f0f0f0">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}"/>
-            </StatusBarItem>
-
-            <StatusBarItem HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Načítání: "
-                               VerticalAlignment="Center"/>
-                    <ProgressBar Width="100"
-                                 Height="15"
-                                 IsIndeterminate="{Binding IsLoading}"
-                                 Margin="5,0,0,0"/>
-                </StackPanel>
-            </StatusBarItem>
-        </StatusBar>
     </Grid>
 </Window>
