@@ -11,18 +11,19 @@ namespace BOJ0043_Web
     public class Program
     {
         public static void Main(string[] args)
-        {            var builder = WebApplication.CreateBuilder(args);
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            
+
             // Přidání podpory pro API s JSON formátováním
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.WriteIndented = true;
             });
-            
+
             // Konfigurace CORS pro komunikaci s desktopovou aplikací
             builder.Services.AddCors(options =>
             {
@@ -33,13 +34,13 @@ namespace BOJ0043_Web
                           .AllowAnyHeader();
                 });
             });
-            
+
             // Konfigurace SQLite databáze
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-            
+
             // Konfigurace ASP.NET Core Identity
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => 
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
                     // Nastavení požadavků na heslo
                     options.Password.RequireDigit = true;
@@ -47,10 +48,10 @@ namespace BOJ0043_Web
                     options.Password.RequireUppercase = true;
                     options.Password.RequireNonAlphanumeric = true;
                     options.Password.RequiredLength = 8;
-                    
+
                     // Nastavení potvrzení emailu
                     options.SignIn.RequireConfirmedEmail = false;
-                    
+
                     // Nastavení zamykání účtu při příliš mnoha neúspěšných pokusech
                     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
                     options.Lockout.MaxFailedAccessAttempts = 5;
@@ -58,26 +59,26 @@ namespace BOJ0043_Web
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddDefaultUI(); // Přidá výchozí UI pro Identity (přihlašování, registrace, atd.)
-                  
+
             // Přidání autorizace
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("RequireReadOnlyRole", policy => policy.RequireRole("ReadOnly", "Admin"));
             });
-                  
+
             // Register IActionContextAccessor for API Documentation UI
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             builder.Services.AddHttpClient();
-            
+
             // Nastavení invariantní kultury pro model binding
             builder.Services.AddMvc()
                 .AddMvcOptions(options =>
                 {
                     // Přidání vlastního model binderu pro decimální hodnoty
                     options.ModelBinderProviders.Insert(0, new Infrastructure.DecimalModelBinderProvider());
-                    
+
                     options.ModelBindingMessageProvider.SetValueIsInvalidAccessor(
                         (x) => $"Hodnota '{x}' není platná.");
                 })
@@ -90,7 +91,7 @@ namespace BOJ0043_Web
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
             });
-            
+
             // Registrace repozitářů
             builder.Services.AddScoped<ICoworkingSpaceRepository, CoworkingSpaceRepository>();
             builder.Services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
@@ -104,11 +105,12 @@ namespace BOJ0043_Web
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-            }            app.UseHttpsRedirection();
+            }
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
-            
+
             // Povolení CORS
             app.UseCors("AllowLocalhost");
 
@@ -118,19 +120,19 @@ namespace BOJ0043_Web
             // Přidání middleware pro autentizaci a autorizaci
             app.UseAuthentication();
             app.UseAuthorization();
-              app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-                
+            app.MapControllerRoute(
+              name: "default",
+              pattern: "{controller=Home}/{action=Index}/{id?}");
+
             // Mapování API endpointů
             app.MapControllerRoute(
                 name: "api",
                 pattern: "api/{controller=Home}/{action=Index}/{id?}");
-                
+
             // Mapování Identity stránek (přihlášení, registrace, atd.)
             app.MapRazorPages();
 
-            // Zajistíme, že se databáze vytvoří a aplikují se migrace při spuštění aplikace
+            // Zajistíme, že se databáze vytvoří a aplikí se migrace při spuštění aplikace
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -138,7 +140,7 @@ namespace BOJ0043_Web
                 {
                     var context = services.GetRequiredService<ApplicationDbContext>();
                     context.Database.Migrate();
-                    
+
                     // Inicializace rolí a admin účtu
                     SeedRoles(services).Wait();
                 }
@@ -151,7 +153,7 @@ namespace BOJ0043_Web
 
             app.Run();
         }
-        
+
         /// <summary>
         /// Inicializuje výchozí role a administrátorský účet
         /// </summary>
@@ -159,7 +161,7 @@ namespace BOJ0043_Web
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            
+
             // Vytvoření rolí, pokud ještě neexistují
             string[] roleNames = { "Admin", "ReadOnly" };
             foreach (var roleName in roleNames)
@@ -169,11 +171,11 @@ namespace BOJ0043_Web
                     await roleManager.CreateAsync(new IdentityRole(roleName));
                 }
             }
-            
+
             // Vytvoření výchozího admin účtu
             var adminEmail = "admin@coworking.cz";
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
-            
+
             if (adminUser == null)
             {
                 adminUser = new ApplicationUser
@@ -184,9 +186,9 @@ namespace BOJ0043_Web
                     LastName = "System",
                     EmailConfirmed = true
                 };
-                
+
                 var result = await userManager.CreateAsync(adminUser, "Admin123!");
-                
+
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
