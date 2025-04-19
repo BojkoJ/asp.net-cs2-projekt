@@ -12,34 +12,54 @@ namespace BOJ0043_App.Views
     {
         private readonly CoworkingSpaceService _coworkingSpaceService;
         private bool _isNew;
-        
+
+        // Use string properties for user input
+        public string LatitudeInput
+        {
+            get => _latitudeInput;
+            set { _latitudeInput = value; OnPropertyChanged(nameof(LatitudeInput)); }
+        }
+        private string _latitudeInput = string.Empty;
+
+        public string LongitudeInput
+        {
+            get => _longitudeInput;
+            set { _longitudeInput = value; OnPropertyChanged(nameof(LongitudeInput)); }
+        }
+        private string _longitudeInput = string.Empty;
+
+        // In constructor, initialize input fields from model
         public CoworkingSpaceEditWindow(CoworkingSpace? coworkingSpace = null)
         {
             InitializeComponent();
-            
+
             _coworkingSpaceService = new CoworkingSpaceService();
-            
+
             // Určíme, zda jde o vytvoření nového nebo úpravu existujícího
             _isNew = coworkingSpace == null;
-            
+
             // Vytvoříme nový objekt, pokud nebyl předán existující
             CoworkingSpace = coworkingSpace ?? new CoworkingSpace();
-            
+
+            LatitudeInput = CoworkingSpace.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            LongitudeInput = CoworkingSpace.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
             // Nastavíme nadpis okna
             WindowTitle = _isNew ? "Nový coworkingový prostor" : "Úprava coworkingového prostoru";
-            
+
             // Nastavíme příkaz pro uložení
             SaveCommand = new RelayCommand(async param => await SaveCoworkingSpaceAsync());
-            
+
+
             DataContext = this;
         }
-        
+
         public CoworkingSpace CoworkingSpace { get; set; }
-        
+
         public string WindowTitle { get; set; }
-        
+
         public ICommand SaveCommand { get; }
-        
+
         private async Task SaveCoworkingSpaceAsync()
         {
             try
@@ -50,13 +70,27 @@ namespace BOJ0043_App.Views
                     MessageBox.Show("Název nemůže být prázdný.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                
+
                 if (string.IsNullOrWhiteSpace(CoworkingSpace.Address))
                 {
                     MessageBox.Show("Adresa nemůže být prázdná.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                
+
+                // Validate latitude and longitude as decimals
+                if (!decimal.TryParse(LatitudeInput.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var latitude))
+                {
+                    MessageBox.Show("Zadejte platnou zeměpisnou šířku (číslo).", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                if (!decimal.TryParse(LongitudeInput.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var longitude))
+                {
+                    MessageBox.Show("Zadejte platnou zeměpisnou délku (číslo).", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                CoworkingSpace.Latitude = latitude;
+                CoworkingSpace.Longitude = longitude;
+
                 // Uložení
                 if (_isNew)
                 {
@@ -92,11 +126,42 @@ namespace BOJ0043_App.Views
                 MessageBox.Show($"Při ukládání došlo k chybě: {ex.Message}", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        
+
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
             Close();
         }
+
+        private void Decimal_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            var textBox = sender as System.Windows.Controls.TextBox;
+            string currentText = textBox?.Text ?? string.Empty;
+            int selectionStart = textBox?.SelectionStart ?? 0;
+            string newText = currentText.Substring(0, selectionStart) + e.Text + currentText.Substring(selectionStart);
+
+            // Allow only digits, one dot or one comma (not both)
+            if (e.Text == "." || e.Text == ",")
+            {
+                // Block if already contains dot or comma
+                if (currentText.Contains(".") || currentText.Contains(","))
+                {
+                    e.Handled = true;
+                    return;
+                }
+                // Allow as first character (e.g. .55)
+                e.Handled = false;
+                return;
+            }
+            else if (!char.IsDigit(e.Text, 0))
+            {
+                e.Handled = true;
+                return;
+            }
+        }
+
+        // Add OnPropertyChanged for INotifyPropertyChanged
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
     }
 }
