@@ -1,6 +1,7 @@
 <Window x:Class="BOJ0043_App.Views.WorkspaceEditWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:val="clr-namespace:BOJ0043_App.Validation"
         Title="Úprava pracovního místa"
         Height="400"
         Width="500"
@@ -25,8 +26,18 @@
                    Text="Název:"
                    FontWeight="Bold"/>
         <TextBox Grid.Row="0"
-                 Grid.Column="1"
-                 Text="{Binding Workspace.Name, UpdateSourceTrigger=PropertyChanged}"/>
+                 Grid.Column="1">
+            <TextBox.Text>
+                <Binding Path="Workspace.Name"
+                         UpdateSourceTrigger="PropertyChanged"
+                         ValidatesOnDataErrors="True"
+                         NotifyOnValidationError="True">
+                    <Binding.ValidationRules>
+                        <val:RequiredFieldValidationRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
 
         <TextBlock Grid.Row="1"
                    Grid.Column="0"
@@ -41,8 +52,19 @@
                    Text="Cena za hodinu:"
                    FontWeight="Bold"/>
         <TextBox Grid.Row="2"
-                 Grid.Column="1"
-                 Text="{Binding Workspace.PricePerHour, UpdateSourceTrigger=PropertyChanged}"/>
+                 Grid.Column="1">
+            <TextBox.Text>
+                <Binding Path="Workspace.PricePerHour"
+                         UpdateSourceTrigger="PropertyChanged"
+                         ValidatesOnDataErrors="True"
+                         NotifyOnValidationError="True">
+                    <Binding.ValidationRules>
+                        <val:RequiredFieldValidationRule/>
+                        <val:DoubleValidationRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
 
         <TextBlock Grid.Row="3"
                    Grid.Column="0"
@@ -53,8 +75,18 @@
                   x:Name="CoworkingSpaceComboBox"
                   ItemsSource="{Binding CoworkingSpaces}"
                   DisplayMemberPath="Name"
-                  SelectedValuePath="Id"
-                  SelectedValue="{Binding Workspace.CoworkingSpaceId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                  SelectedValuePath="Id">
+            <ComboBox.SelectedValue>
+                <Binding Path="Workspace.CoworkingSpaceId"
+                         UpdateSourceTrigger="PropertyChanged"
+                         ValidatesOnDataErrors="True"
+                         NotifyOnValidationError="True">
+                    <Binding.ValidationRules>
+                        <val:RequiredFieldValidationRule/>
+                    </Binding.ValidationRules>
+                </Binding>
+            </ComboBox.SelectedValue>
+        </ComboBox>
 
         <TextBlock Grid.Row="4"
                    Grid.Column="0"
