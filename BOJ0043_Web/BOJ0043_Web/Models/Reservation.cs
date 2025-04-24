@@ -2,9 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BOJ0043_Web.Models
 {
-    /// <summary>
-    /// Model reprezentující rezervaci (obsazení) pracovního místa
-    /// </summary>
     public class Reservation
     {
         public int Id { get; set; }

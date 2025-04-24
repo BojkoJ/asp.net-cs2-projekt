@@ -4,9 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace BOJ0043_App.Models
 {
-    /// <summary>
-    /// Model reprezentující rezervaci pracovního místa
-    /// </summary>
+    // Model reprezentující rezervaci pracovního místa
     public class Reservation : INotifyPropertyChanged
     {
         private int _id;

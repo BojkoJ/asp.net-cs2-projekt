@@ -13,7 +13,6 @@ namespace BOJ0043_App.Views
         private readonly CoworkingSpaceService _coworkingSpaceService;
         private bool _isNew;
 
-        // Use string properties for user input
         public string LatitudeInput
         {
             get => _latitudeInput;
@@ -28,7 +27,6 @@ namespace BOJ0043_App.Views
         }
         private string _longitudeInput = string.Empty;
 
-        // In constructor, initialize input fields from model
         public CoworkingSpaceEditWindow(CoworkingSpace? coworkingSpace = null)
         {
             InitializeComponent();
@@ -140,16 +138,13 @@ namespace BOJ0043_App.Views
             int selectionStart = textBox?.SelectionStart ?? 0;
             string newText = currentText.Substring(0, selectionStart) + e.Text + currentText.Substring(selectionStart);
 
-            // Allow only digits, one dot or one comma (not both)
             if (e.Text == "." || e.Text == ",")
             {
-                // Block if already contains dot or comma
                 if (currentText.Contains(".") || currentText.Contains(","))
                 {
                     e.Handled = true;
                     return;
                 }
-                // Allow as first character (e.g. .55)
                 e.Handled = false;
                 return;
             }
@@ -160,7 +155,6 @@ namespace BOJ0043_App.Views
             }
         }
 
-        // Add OnPropertyChanged for INotifyPropertyChanged
         public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
     }

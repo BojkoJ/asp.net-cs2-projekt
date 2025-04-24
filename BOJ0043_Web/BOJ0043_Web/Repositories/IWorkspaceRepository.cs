@@ -4,37 +4,23 @@ namespace BOJ0043_Web.Repositories
 {
     public interface IWorkspaceRepository : IRepository<Workspace>
     {
-        /// <summary>
-        /// Získá pracovní místo včetně coworkingového prostoru
-        /// </summary>
+        // Získá pracovní místo včetně coworkingového prostoru
         Task<Workspace?> GetWithCoworkingSpaceAsync(int id);
 
-        /// <summary>
-        /// Získá pracovní místo včetně historie stavů
-        /// </summary>
-        Task<Workspace?> GetWithStatusHistoryAsync(int id);        /// <summary>
-        /// Získá všechna pracovní místa v daném coworkingovém prostoru
-        /// </summary>
+        // Získá pracovní místo včetně historie stavů
+        Task<Workspace?> GetWithStatusHistoryAsync(int id);        // Získá všechna pracovní místa v daném coworkingovém prostoru
         Task<IEnumerable<Workspace>> GetByCoworkingSpaceIdAsync(int coworkingSpaceId);
         
-        /// <summary>
-        /// Získá všechna pracovní místa včetně jejich coworkingových prostorů
-        /// </summary>
+        // Získá všechna pracovní místa včetně jejich coworkingových prostorů
         Task<IEnumerable<Workspace>> GetAllWithCoworkingSpaceAsync();
 
-        /// <summary>
-        /// Získá všechna dostupná pracovní místa v daném coworkingovém prostoru
-        /// </summary>
+        // Získá všechna dostupná pracovní místa v daném coworkingovém prostoru
         Task<IEnumerable<Workspace>> GetAvailableByCoworkingSpaceIdAsync(int coworkingSpaceId);
 
-        /// <summary>
-        /// Změní stav pracovního místa a zaznamená změnu do historie
-        /// </summary>
+        // Změní stav pracovního místa a zaznamená změnu do historie
         Task ChangeStatusAsync(int id, WorkspaceStatus newStatus, string? comment = null);
 
-        /// <summary>
-        /// Získá pracovní místo včetně rezervací
-        /// </summary>
+        // Získá pracovní místo včetně rezervací
         
         Task <Workspace?> GetWithReservationsAsync(int id);
     }

@@ -4,9 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace BOJ0043_App.Models
 {
-    /// <summary>
-    /// Model reprezentující coworkingový prostor
-    /// </summary>
+    // Model reprezentující coworkingový prostor
     public class CoworkingSpace : INotifyPropertyChanged
     {
         private int _id;

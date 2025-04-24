@@ -7087,11 +7087,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\roryb\\Desktop\\CS_Projekt\\BOJ0043_Web\\BOJ0043_Web\\BOJ0043_Web.csproj",
+      "projectUniqueName": "C:\\Users\\roryb\\Desktop\\asp.net-cs2-projekt\\BOJ0043_Web\\BOJ0043_Web\\BOJ0043_Web.csproj",
       "projectName": "BOJ0043_Web",
-      "projectPath": "C:\\Users\\roryb\\Desktop\\CS_Projekt\\BOJ0043_Web\\BOJ0043_Web\\BOJ0043_Web.csproj",
+      "projectPath": "C:\\Users\\roryb\\Desktop\\asp.net-cs2-projekt\\BOJ0043_Web\\BOJ0043_Web\\BOJ0043_Web.csproj",
       "packagesPath": "C:\\Users\\roryb\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\roryb\\Desktop\\CS_Projekt\\BOJ0043_Web\\BOJ0043_Web\\obj\\",
+      "outputPath": "C:\\Users\\roryb\\Desktop\\asp.net-cs2-projekt\\BOJ0043_Web\\BOJ0043_Web\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

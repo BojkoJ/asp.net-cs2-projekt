@@ -276,6 +276,7 @@ namespace BOJ0043_Web.Controllers
                 return Json(new { error = "Interní chyba serveru: " + ex.Message });
             }
         }
+        
         // POST: CoworkingSpace/CreateApi (JSON API for WPF)
         [AllowAnonymous]
         [HttpPost]
@@ -283,13 +284,12 @@ namespace BOJ0043_Web.Controllers
         {
             coworkingSpace.Id = 0;
 
-            // Basic validation example (can be expanded)
             if (string.IsNullOrWhiteSpace(coworkingSpace.Name))
             {
                 return Json(new { error = "Název coworkingového prostoru je povinný." });
             }
 
-            // Server-side validation for phone and email
+            // Validace na straně serveru - telefon a email
             var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
             var context = new System.ComponentModel.DataAnnotations.ValidationContext(coworkingSpace, null, null);
             if (!System.ComponentModel.DataAnnotations.Validator.TryValidateObject(coworkingSpace, context, validationResults, true))

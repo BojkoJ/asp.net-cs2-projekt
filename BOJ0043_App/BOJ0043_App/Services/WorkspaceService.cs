@@ -16,17 +16,14 @@ namespace BOJ0043_App.Services
         {
             try
             {
-                // Zkusíme nejprve standardní API endpoint
                 var result = await GetAsync<List<Workspace>>(_endpoint);
                 if (result != null)
                     return result;
 
-                // Pokud standardní endpoint nefunguje, zkusíme MVC controller
                 return await GetAsync<List<Workspace>>("Workspace/GetAll");
             }
             catch
             {
-                // Pokud první pokus selže, zkusíme alternativní endpoint
                 return await GetAsync<List<Workspace>>("Workspace/GetAll");
             }
         }
@@ -34,7 +31,6 @@ namespace BOJ0043_App.Services
         {
             try
             {
-                // Přímé volání na MVC controller s přesným endpointem
                 System.Diagnostics.Debug.WriteLine($"Volám endpoint: Workspace/GetByCoworkingSpaceId?coworkingSpaceId={coworkingSpaceId}");
                 var result = await GetAsync<List<Workspace>>($"Workspace/GetByCoworkingSpaceId?coworkingSpaceId={coworkingSpaceId}");
 
@@ -61,17 +57,14 @@ namespace BOJ0043_App.Services
         {
             try
             {
-                // Zkusíme nejprve standardní API endpoint
                 var result = await GetAsync<Workspace>($"{_endpoint}/{id}");
                 if (result != null)
                     return result;
 
-                // Pokud standardní endpoint nefunguje, zkusíme MVC controller
                 return await GetAsync<Workspace>($"Workspace/GetById/{id}");
             }
             catch
             {
-                // Pokud první pokus selže, zkusíme alternativní endpoint
                 return await GetAsync<Workspace>($"Workspace/GetById/{id}");
             }
         }
@@ -79,13 +72,11 @@ namespace BOJ0043_App.Services
         {
             try
             {
-                // Zkusíme nejprve standardní API endpoint
                 var result = await PostAsync<Workspace>("Workspace/CreateApi", workspace);
                 return result;
             }
             catch
             {
-                // Pokud první pokus selže, zkusíme znova
                 return await PostAsync<Workspace>("Workspace/CreateApi", workspace);
             }
         }
@@ -108,11 +99,9 @@ namespace BOJ0043_App.Services
 
         public async Task<List<WorkspaceStatusHistory>?> GetStatusHistoryAsync(int workspaceId)
         {
-            // Assumes API endpoint: Workspace/GetStatusHistory?workspaceId={workspaceId}
             return await GetAsync<List<WorkspaceStatusHistory>>($"Workspace/GetStatusHistory?workspaceId={workspaceId}");
         }
 
-        // Helper to map Czech status to enum string
         private string MapCzechStatusToEnum(string status)
         {
             switch (status?.Trim())

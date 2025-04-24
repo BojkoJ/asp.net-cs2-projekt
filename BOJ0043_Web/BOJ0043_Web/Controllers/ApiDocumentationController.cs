@@ -41,7 +41,7 @@ namespace BOJ0043_Web.Controllers
         {
             var tags = new List<ApiTag>();
             
-            // ZAČÁTEK POUŽITÍ REFLEXE - Získání všech kontrolerů v projektu pomocí reflexe
+            // Reflexe - získání všech kontrolerů
             var assembly = Assembly.GetExecutingAssembly();
             var controllers = assembly.GetTypes()
                 .Where(type => 
@@ -60,7 +60,6 @@ namespace BOJ0043_Web.Controllers
                 // Použití reflexe pro získání atributů kontroleru
                 var displayNameAttr = controller.GetCustomAttribute<DisplayNameAttribute>();
                 var descriptionAttr = controller.GetCustomAttribute<DescriptionAttribute>();
-                // KONEC POUŽITÍ REFLEXE
                 
                 var controllerName = controller.Name.Replace("Controller", "");
                 var displayName = displayNameAttr?.DisplayName ?? controllerName;
@@ -79,7 +78,7 @@ namespace BOJ0043_Web.Controllers
         {
             var paths = new Dictionary<string, Dictionary<string, ApiEndpoint>>();
             
-            // ZAČÁTEK POUŽITÍ REFLEXE - Získání všech kontrolerů v aplikaci
+            // Reflexe - získání všech kontrolerů v aplikaci
             var assembly = Assembly.GetExecutingAssembly();
             var controllers = assembly.GetTypes()
                 .Where(type => 
@@ -91,13 +90,13 @@ namespace BOJ0043_Web.Controllers
 
             foreach (var controller in controllers)
             {
-                // Přeskočte kontroler dokumentace API a ApiDocs
+                // Přeskočit kontroler dokumentace API a ApiDocs
                 if (controller == typeof(ApiDocumentationController) || controller.Name == "ApiDocsController")
                     continue;
 
                 var routePrefix = GetRoutePrefix(controller);
                 
-                // Použití reflexe pro získání veřejných metod kontroleru
+                // Reflexe - získání veřejných metod kontroleru
                 var methods = controller.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
                 foreach (var method in methods)
                 {
@@ -137,7 +136,7 @@ namespace BOJ0043_Web.Controllers
             return paths;
         }        private string GetRoutePrefix(Type controller)
         {
-            // ZAČÁTEK POUŽITÍ REFLEXE - Získání atributů routování z kontroleru
+            // Reflexe - získání atributů routování v kontroleru
             // Nejprve zkusíme nalézt explicitně definovanou RouteAttribute
             var routeAttr = controller.GetCustomAttribute<RouteAttribute>();
             if (routeAttr != null)
@@ -149,7 +148,6 @@ namespace BOJ0043_Web.Controllers
             // Pokud je kontroler API (má atribut ApiController), použijeme api/ prefix
             if (controller.GetCustomAttributes(typeof(ApiControllerAttribute), true).Any())
                 return $"api/{controllerName}";
-            // KONEC POUŽITÍ REFLEXE
             
             // Pro standardní MVC kontrolery použijeme pouze název kontroleru
             return controllerName;
@@ -178,7 +176,10 @@ namespace BOJ0043_Web.Controllers
                 return httpDelete.Template;
 
             return method.Name;
-        }        private string CombineRoutePath(string prefix, string suffix)
+        }       
+         
+         
+        private string CombineRoutePath(string prefix, string suffix)
         {
             // Pokud prefix obsahuje "api/", přidáme lomítko na začátek (API style)
             bool isApiRoute = prefix.StartsWith("api/");
@@ -192,7 +193,9 @@ namespace BOJ0043_Web.Controllers
 
             // Jinak přidáme lomítko mezi prefix a suffix
             return isApiRoute ? $"/{prefix}/{suffix}" : $"{prefix}/{suffix}";
-        }        private Attribute GetHttpMethodAttribute(MethodInfo method)
+        }        
+        
+        private Attribute GetHttpMethodAttribute(MethodInfo method)
         {
             var httpGet = method.GetCustomAttribute<HttpGetAttribute>();
             if (httpGet != null)
@@ -214,7 +217,7 @@ namespace BOJ0043_Web.Controllers
             if (httpPatch != null)
                 return httpPatch;
 
-            // Metody bez explicitního HTTP atributu považujeme za GET (MVC konvence)
+            // Metody bez explicitního HTTP atributu považujeme za GET
             // Ale pouze pokud nemají tyto atributy pro formuláře - ty by neměly být v API dokumentaci
             if (!method.GetCustomAttributes<ValidateAntiForgeryTokenAttribute>().Any() && 
                 !method.GetCustomAttributes<NonActionAttribute>().Any())
@@ -368,19 +371,16 @@ namespace BOJ0043_Web.Controllers
             // Get the real return type from IActionResult, ActionResult<T> etc.
             var returnType = method.ReturnType;
             
-            // For Task<T>
             if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
             {
                 returnType = returnType.GetGenericArguments()[0];
             }
             
-            // For ActionResult<T>
             if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(ActionResult<>))
             {
                 returnType = returnType.GetGenericArguments()[0];
             }
             
-            // For IActionResult/ActionResult, we don't know the exact type
             if (returnType == typeof(IActionResult) || returnType == typeof(ActionResult))
             {
                 returnType = typeof(object); // Generic object
@@ -391,7 +391,6 @@ namespace BOJ0043_Web.Controllers
 
         private string GetSummary(MethodInfo method)
         {
-            // Try to get XML doc summary
             var summaryAttr = method.GetCustomAttribute<DisplayNameAttribute>();
             return summaryAttr?.DisplayName ?? method.Name;
         }        private string GetDescription(MethodInfo method)

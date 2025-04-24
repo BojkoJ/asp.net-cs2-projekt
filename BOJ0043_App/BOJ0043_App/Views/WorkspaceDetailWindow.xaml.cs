@@ -15,7 +15,6 @@ namespace BOJ0043_App.Views
             InitializeComponent();
             DataContext = workspace;
             ActiveReservations = new ObservableCollection<Reservation>();
-            // Fetch active reservations from API
             LoadActiveReservationsAsync(workspace.Id);
         }
 

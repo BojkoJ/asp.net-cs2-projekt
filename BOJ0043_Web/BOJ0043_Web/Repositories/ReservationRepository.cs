@@ -32,17 +32,10 @@ namespace BOJ0043_Web.Repositories
 
         public async Task<IEnumerable<Reservation>> GetActiveByWorkspaceIdAsync(int workspaceId)
         {
-            // Debug log: workspaceId
-            Console.WriteLine($"[DEBUG] GetActiveByWorkspaceIdAsync called with workspaceId: {workspaceId}");
             var allReservations = await _context.Reservations
                 .Where(r => r.WorkspaceId == workspaceId)
                 .OrderBy(r => r.StartTime)
                 .ToListAsync();
-            Console.WriteLine($"[DEBUG] All reservations for workspaceId {workspaceId}:");
-            foreach (var res in allReservations)
-            {
-                Console.WriteLine($"  Id: {res.Id}, IsCompleted: {res.IsCompleted}, Start: {res.StartTime}, End: {res.EndTime}, Email: {res.CustomerEmail}");
-            }
             return allReservations.Where(r => !r.IsCompleted);
         }
 

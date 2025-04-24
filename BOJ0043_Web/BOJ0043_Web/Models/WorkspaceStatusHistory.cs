@@ -2,9 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BOJ0043_Web.Models
 {
-    /// <summary>
-    /// Model reprezentující historii změn stavu pracovního místa
-    /// </summary>
     public class WorkspaceStatusHistory
     {
         public int Id { get; set; }

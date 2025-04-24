@@ -4,10 +4,7 @@ using System.Linq.Expressions;
 
 namespace BOJ0043_Web.Repositories
 {
-    /// <summary>
-    /// Základní implementace repozitáře pro práci s entitami
-    /// </summary>
-    /// <typeparam name="T">Typ entity</typeparam>
+    // Základní implementace repozitáře pro práci s entitami
     public class Repository<T> : IRepository<T> where T : class
     {
         protected readonly ApplicationDbContext _context;

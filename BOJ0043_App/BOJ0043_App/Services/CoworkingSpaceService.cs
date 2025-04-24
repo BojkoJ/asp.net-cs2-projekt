@@ -6,7 +6,6 @@ namespace BOJ0043_App.Services
 {
     public class CoworkingSpaceService : ApiService
     {
-        // Změněný endpoint pro získání dat z MVC kontroleru
         private const string _endpoint = "api/coworkingspace";
 
         public CoworkingSpaceService(string baseUrl = "http://localhost:5263/") : base(baseUrl)

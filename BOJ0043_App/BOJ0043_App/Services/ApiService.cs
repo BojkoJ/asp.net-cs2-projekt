@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace BOJ0043_App.Services
 {
-    /// <summary>
-    /// Základní třída pro API služby
-    /// </summary>
+    // Základní třída pro API služby
     public class ApiService
     {
         protected readonly HttpClient _httpClient;

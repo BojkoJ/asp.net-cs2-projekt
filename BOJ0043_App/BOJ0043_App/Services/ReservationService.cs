@@ -16,12 +16,10 @@ namespace BOJ0043_App.Services
         {
             try
             {
-                // Zkusíme nejprve standardní API endpoint
                 var result = await GetAsync<List<Reservation>>(_endpoint);
                 if (result != null)
                     return result;
 
-                // Pokud standardní endpoint nefunguje, zkusíme MVC controller
                 return await GetAsync<List<Reservation>>("Reservation/GetAll");
             }
             catch
@@ -35,8 +33,6 @@ namespace BOJ0043_App.Services
         {
             try
             {
-                // Přímé volání na MVC controller s přesným endpointem
-                System.Diagnostics.Debug.WriteLine($"Volám endpoint: Reservation/GetByWorkspaceId?workspaceId={workspaceId}");
                 var result = await GetAsync<List<Reservation>>($"Reservation/GetByWorkspaceId?workspaceId={workspaceId}");
 
                 if (result != null)
@@ -60,8 +56,6 @@ namespace BOJ0043_App.Services
 
         public async Task<Reservation?> GetReservationByIdAsync(int id)
         {
-
-
             // Zkusíme nejprve standardní API endpoint
             var result = await GetAsync<Reservation>($"{_endpoint}/{id}");
             if (result != null)

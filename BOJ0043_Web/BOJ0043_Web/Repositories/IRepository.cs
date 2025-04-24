@@ -2,9 +2,7 @@ using System.Linq.Expressions;
 
 namespace BOJ0043_Web.Repositories
 {
-    /// <summary>
-    /// Obecné rozhraní pro repozitář, který pracuje s entitami typu T
-    /// </summary>
+    // Obecné rozhraní pro repozitář, který pracuje s entitami typu T
     /// <typeparam name="T">Typ entity</typeparam>
     public interface IRepository<T> where T : class
     {

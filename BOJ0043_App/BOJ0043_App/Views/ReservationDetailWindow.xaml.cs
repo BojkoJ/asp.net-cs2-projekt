@@ -21,7 +21,6 @@ namespace BOJ0043_App.Views
         {
             if (DataContext is Reservation reservation)
             {
-                // Confirm action
                 var result = MessageBox.Show("Opravdu chcete ukončit tuto rezervaci?\nPracovní místo bude nastaveno jako dostupné.", "Potvrzení ukončení", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                 if (result == MessageBoxResult.Yes)
                 {

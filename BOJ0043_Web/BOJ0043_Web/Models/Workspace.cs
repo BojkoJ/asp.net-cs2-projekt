@@ -2,9 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BOJ0043_Web.Models
 {
-    /// <summary>
-    /// Model reprezentující pracovní místo v coworkingovém prostoru
-    /// </summary>
     public class Workspace
     {
         public int Id { get; set; }
