@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using BOJ0043_Web.Infrastructure;
 
 namespace BOJ0043_Web.Controllers
 {
@@ -97,7 +98,11 @@ namespace BOJ0043_Web.Controllers
                 var routePrefix = GetRoutePrefix(controller);
                 
                 // Reflexe - získání veřejných metod kontroleru
-                var methods = controller.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                // Pouze metody s atributem [ApiSchema] (tj. pouze API endpoints pod regionem API metody pro WPF aplikaci)
+                var methods = controller.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                    .Where(m => m.GetCustomAttribute<ApiSchemaAttribute>() != null)
+                    .ToList();
+
                 foreach (var method in methods)
                 {
                     // Jen pro metody s atributem HTTP verb (GET, POST, PUT, DELETE)
@@ -108,14 +113,15 @@ namespace BOJ0043_Web.Controllers
                     var httpMethod = GetHttpMethod(httpMethodAttribute);
                     var routeSuffix = GetRouteSuffix(method);
                     var fullPath = CombineRoutePath(routePrefix, routeSuffix);
-                    
+
                     if (!paths.ContainsKey(fullPath))
                     {
                         paths[fullPath] = new Dictionary<string, ApiEndpoint>();
-                    }                    var parameters = GetParameters(method);
+                    }
+                    var parameters = GetParameters(method);
                     var returnType = GetReturnType(method);
                     var summary = GetSummary(method);
-                    
+
                     // Získání názvu kontroleru jako tagu
                     var controllerName = controller.Name.Replace("Controller", "");
                     var tags = new List<string> { controllerName };
@@ -299,13 +305,23 @@ namespace BOJ0043_Web.Controllers
 
         private ApiRequestBody GetRequestBody(MethodInfo method)
         {
-            // Check if method has a parameter with [FromBody]
-            var bodyParam = method.GetParameters()
-                .FirstOrDefault(p => p.GetCustomAttribute<FromBodyAttribute>() != null);
-            
-            if (bodyParam == null)
+            // Check for custom ApiSchemaAttribute
+            var schemaAttr = method.GetCustomAttribute<ApiSchemaAttribute>();
+            Type requestType = null;
+            if (schemaAttr != null && schemaAttr.RequestType != null)
+            {
+                requestType = schemaAttr.RequestType;
+            }
+            else
+            {
+                // Fallback: find parameter with [FromBody]
+                var bodyParam = method.GetParameters()
+                    .FirstOrDefault(p => p.GetCustomAttribute<FromBodyAttribute>() != null);
+                if (bodyParam != null)
+                    requestType = bodyParam.ParameterType;
+            }
+            if (requestType == null)
                 return null;
-            
             return new ApiRequestBody
             {
                 Description = $"Request body for {method.Name}",
@@ -316,8 +332,8 @@ namespace BOJ0043_Web.Controllers
                     {
                         Schema = new ApiSchema
                         {
-                            Type = GetParameterType(bodyParam.ParameterType),
-                            Reference = $"#/components/schemas/{bodyParam.ParameterType.Name}"
+                            Type = GetParameterType(requestType),
+                            Reference = $"#/components/schemas/{requestType.Name}"
                         }
                     }
                 }
@@ -327,42 +343,50 @@ namespace BOJ0043_Web.Controllers
         private Dictionary<string, ApiResponse> GetResponses(MethodInfo method, Type returnType)
         {
             var responses = new Dictionary<string, ApiResponse>();
-            
+            // Check for custom ApiSchemaAttribute
+            var schemaAttr = method.GetCustomAttribute<ApiSchemaAttribute>();
+            Type responseType = null;
+            if (schemaAttr != null && schemaAttr.ResponseType != null)
+            {
+                responseType = schemaAttr.ResponseType;
+            }
+            else
+            {
+                responseType = returnType;
+            }
             // Default success response
             responses["200"] = new ApiResponse
             {
                 Description = "Successful operation",
-                Content = returnType != typeof(void) ? 
+                Content = responseType != typeof(void) ?
                     new Dictionary<string, ApiContent>
                     {
                         ["application/json"] = new ApiContent
                         {
                             Schema = new ApiSchema
                             {
-                                Type = GetParameterType(returnType),
-                                Items = returnType.IsGenericType && 
-                                       (returnType.GetGenericTypeDefinition() == typeof(List<>) || 
-                                        returnType.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ?
+                                Type = GetParameterType(responseType),
+                                Items = responseType.IsGenericType &&
+                                       (responseType.GetGenericTypeDefinition() == typeof(List<>) ||
+                                        responseType.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ?
                                     new ApiSchema
                                     {
-                                        Type = GetParameterType(returnType.GetGenericArguments()[0]),
-                                        Reference = $"#/components/schemas/{returnType.GetGenericArguments()[0].Name}"
+                                        Type = GetParameterType(responseType.GetGenericArguments()[0]),
+                                        Reference = $"#/components/schemas/{responseType.GetGenericArguments()[0].Name}"
                                     } : null,
-                                Reference = !returnType.IsGenericType && returnType != typeof(void) && 
-                                           returnType != typeof(string) && returnType != typeof(int) && 
-                                           returnType != typeof(bool) && returnType != typeof(object) ?
-                                    $"#/components/schemas/{returnType.Name}" : null
+                                Reference = !responseType.IsGenericType && responseType != typeof(void) &&
+                                           responseType != typeof(string) && responseType != typeof(int) &&
+                                           responseType != typeof(bool) && responseType != typeof(object) ?
+                                    $"#/components/schemas/{responseType.Name}" : null
                             }
                         }
                     } : null
             };
-            
             // Default error responses
             responses["400"] = new ApiResponse { Description = "Bad request" };
             responses["401"] = new ApiResponse { Description = "Unauthorized" };
             responses["404"] = new ApiResponse { Description = "Not found" };
             responses["500"] = new ApiResponse { Description = "Internal server error" };
-            
             return responses;
         }
 

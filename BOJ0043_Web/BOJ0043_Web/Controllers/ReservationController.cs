@@ -1,3 +1,4 @@
+using BOJ0043_Web.Infrastructure;
 using BOJ0043_Web.Models;
 using BOJ0043_Web.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -232,6 +233,7 @@ namespace BOJ0043_Web.Controllers
         // GET: Reservation/GetAll
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(IEnumerable<Reservation>))]
         public async Task<ActionResult<IEnumerable<Reservation>>> GetAll()
         {
             try
@@ -249,6 +251,7 @@ namespace BOJ0043_Web.Controllers
         // GET: Reservation/GetById/5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(Reservation))]
         public async Task<ActionResult<Reservation>> GetById(int id)
         {
             try
@@ -270,6 +273,7 @@ namespace BOJ0043_Web.Controllers
         // GET: Reservation/GetByWorkspaceId/5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(IEnumerable<Reservation>))]
         public async Task<ActionResult<IEnumerable<Reservation>>> GetByWorkspaceId(int workspaceId)
         {
             try
@@ -287,6 +291,7 @@ namespace BOJ0043_Web.Controllers
         // GET: Reservation/GetActiveByWorkspaceId/5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(IEnumerable<Reservation>))]
         public async Task<ActionResult<IEnumerable<Reservation>>> GetActiveByWorkspaceId(int workspaceId)
         {
             Console.WriteLine($"[DEBUG] Controller: GetActiveByWorkspaceId called with workspaceId: {workspaceId}");
@@ -305,6 +310,7 @@ namespace BOJ0043_Web.Controllers
         // POST: Reservation/CompleteApi/5
         [HttpPost]
         [AllowAnonymous]
+        [ApiSchema(typeof(void), typeof(object))]
         public async Task<IActionResult> CompleteApi(int id)
         {
             try
@@ -322,6 +328,7 @@ namespace BOJ0043_Web.Controllers
         // POST: Reservation/CreateApi
         [HttpPost]
         [AllowAnonymous]
+        [ApiSchema(typeof(Reservation), typeof(object))]
         public async Task<IActionResult> CreateApi([FromBody] Reservation reservation)
         {
             try
@@ -353,6 +360,7 @@ namespace BOJ0043_Web.Controllers
         // POST: Reservation/StatisticsApi
         [HttpPost]
         [AllowAnonymous]
+        [ApiSchema(typeof(void), typeof(Dictionary<string, int>))]
         public async Task<IActionResult> StatisticsApi(DateTime StartDate, DateTime EndDate)
         {
             try

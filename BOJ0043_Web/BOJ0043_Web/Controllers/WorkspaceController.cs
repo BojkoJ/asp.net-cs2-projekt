@@ -1,3 +1,4 @@
+ using BOJ0043_Web.Infrastructure;
 using BOJ0043_Web.Models;
 using BOJ0043_Web.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -272,12 +273,22 @@ namespace BOJ0043_Web.Controllers
         // GET: Workspace/GetAll
         [AllowAnonymous] // Povoluje volání bez autentizace
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(IEnumerable<BOJ0043_Web.DTOs.WorkspaceDto>))]
         public async Task<JsonResult> GetAll()
         {
             try
             {
                 var workspaces = await _workspaceRepository.GetAllAsync();
-                return Json(workspaces);
+                var dtos = workspaces.Select(w => new BOJ0043_Web.DTOs.WorkspaceDto
+                {
+                    Id = w.Id,
+                    Name = w.Name,
+                    Description = w.Description,
+                    PricePerHour = w.PricePerHour,
+                    CoworkingSpaceId = w.CoworkingSpaceId,
+                    CurrentStatus = w.CurrentStatus
+                }).ToList();
+                return Json(dtos);
             }
             catch (Exception ex)
             {
@@ -289,12 +300,31 @@ namespace BOJ0043_Web.Controllers
         // GET: Workspace/GetAllWithCoworkingSpace
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(IEnumerable<BOJ0043_Web.DTOs.WorkspaceWithCoworkingSpaceDto>))]
         public async Task<JsonResult> GetAllWithCoworkingSpace()
         {
             try
             {
                 var workspaces = await _workspaceRepository.GetAllWithCoworkingSpaceAsync();
-                return Json(workspaces);
+                var dtos = workspaces.Select(w => new BOJ0043_Web.DTOs.WorkspaceWithCoworkingSpaceDto
+                {
+                    Id = w.Id,
+                    Name = w.Name,
+                    Description = w.Description,
+                    PricePerHour = w.PricePerHour,
+                    CoworkingSpaceId = w.CoworkingSpaceId,
+                    CurrentStatus = w.CurrentStatus,
+                    CoworkingSpace = w.CoworkingSpace == null ? null : new BOJ0043_Web.DTOs.CoworkingSpaceDto
+                    {
+                        Id = w.CoworkingSpace.Id,
+                        Name = w.CoworkingSpace.Name,
+                        Description = w.CoworkingSpace.Description,
+                        Address = w.CoworkingSpace.Address,
+                        Latitude = w.CoworkingSpace.Latitude,
+                        Longitude = w.CoworkingSpace.Longitude
+                    }
+                }).ToList();
+                return Json(dtos);
             }
             catch (Exception ex)
             {
@@ -306,6 +336,7 @@ namespace BOJ0043_Web.Controllers
         // GET: Workspace/GetById/5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(Workspace))]
         public async Task<JsonResult> GetById(int id)
         {
             try
@@ -327,6 +358,7 @@ namespace BOJ0043_Web.Controllers
         // GET: Workspace/GetWithCoworkingSpace/5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(Workspace))]
         public async Task<JsonResult> GetWithCoworkingSpace(int id)
         {
             try
@@ -348,12 +380,22 @@ namespace BOJ0043_Web.Controllers
         // GET: Workspace/GetByCoworkingSpaceId/5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(IEnumerable<BOJ0043_Web.DTOs.WorkspaceDto>))]
         public async Task<JsonResult> GetByCoworkingSpaceId(int coworkingSpaceId)
         {
             try
             {
                 var workspaces = await _workspaceRepository.GetByCoworkingSpaceIdAsync(coworkingSpaceId);
-                return Json(workspaces);
+                var dtos = workspaces.Select(w => new BOJ0043_Web.DTOs.WorkspaceDto
+                {
+                    Id = w.Id,
+                    Name = w.Name,
+                    Description = w.Description,
+                    PricePerHour = w.PricePerHour,
+                    CoworkingSpaceId = w.CoworkingSpaceId,
+                    CurrentStatus = w.CurrentStatus
+                }).ToList();
+                return Json(dtos);
             }
             catch (Exception ex)
             {
@@ -365,6 +407,7 @@ namespace BOJ0043_Web.Controllers
         // GET: Workspace/GetStatusHistory?workspaceId=5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(IEnumerable<BOJ0043_Web.DTOs.WorkspaceStatusHistoryDto>))]
         public async Task<JsonResult> GetStatusHistory(int workspaceId)
         {
             try
@@ -374,15 +417,14 @@ namespace BOJ0043_Web.Controllers
                 {
                     return Json(new { error = "Pracovní místo nebylo nalezeno" });
                 }
-                // Project to avoid cycles: only send primitive properties
                 var history = workspace.StatusHistory
-                    .Select(h => new
+                    .Select(h => new BOJ0043_Web.DTOs.WorkspaceStatusHistoryDto
                     {
-                        h.Id,
-                        h.WorkspaceId,
+                        Id = h.Id,
+                        WorkspaceId = h.WorkspaceId,
                         Status = h.Status.ToString(),
-                        h.ChangedAt,
-                        h.Comment
+                        ChangedAt = h.ChangedAt,
+                        Comment = h.Comment
                     }).ToList();
                 return Json(history);
             }
@@ -396,6 +438,7 @@ namespace BOJ0043_Web.Controllers
         // POST: Workspace/ChangeStatusApi
         [AllowAnonymous]
         [HttpPost]
+        [ApiSchema(typeof(void), typeof(BOJ0043_Web.DTOs.WorkspaceChangeStatusResultDto))]
         public async Task<JsonResult> ChangeStatusApi(int id, string newStatus, string comment)
         {
             try
@@ -403,21 +446,22 @@ namespace BOJ0043_Web.Controllers
                 // Parse the status string to enum
                 if (!Enum.TryParse<WorkspaceStatus>(newStatus, out var statusEnum))
                 {
-                    return Json(new { success = false, error = "Neplatný stav." });
+                    return Json(new BOJ0043_Web.DTOs.WorkspaceChangeStatusResultDto { Success = false, Error = "Neplatný stav." });
                 }
                 await _workspaceRepository.ChangeStatusAsync(id, statusEnum, comment);
-                return Json(new { success = true });
+                return Json(new BOJ0043_Web.DTOs.WorkspaceChangeStatusResultDto { Success = true });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Chyba při změně stavu pracovního místa (API) pro ID {id}");
-                return Json(new { success = false, error = ex.Message });
+                return Json(new BOJ0043_Web.DTOs.WorkspaceChangeStatusResultDto { Success = false, Error = ex.Message });
             }
         }
 
         // PUT: Workspace/Update/{id} (JSON API for WPF)
         [AllowAnonymous]
         [HttpPut]
+        [ApiSchema(typeof(Workspace), typeof(object))]
         public async Task<JsonResult> Update(int id, [FromBody] Workspace workspace)
         {
             if (id != workspace.Id)
@@ -449,6 +493,7 @@ namespace BOJ0043_Web.Controllers
         // POST: Workspace/CreateApi (JSON API for WPF)
         [AllowAnonymous]
         [HttpPost]
+        [ApiSchema(typeof(Workspace), typeof(object))]
         public async Task<JsonResult> CreateApi([FromBody] Workspace workspace)
         {
             // Basic validation
@@ -471,6 +516,7 @@ namespace BOJ0043_Web.Controllers
         // DELETE: Workspace/DeleteApi/5 (JSON API for WPF)
         [AllowAnonymous]
         [HttpDelete]
+        [ApiSchema(typeof(void), typeof(object))]
         public async Task<JsonResult> DeleteApi(int id)
         {
             try

@@ -415,39 +415,20 @@
                 if (!requestBody) {
                     return '';
                 }
-                
                 const contentType = requestBody.content && Object.keys(requestBody.content)[0];
                 const schema = contentType && requestBody.content[contentType].schema;
-                
                 let html = `
                     <div class="section-title">Tělo požadavku</div>
                     <p>${requestBody.description || ''}</p>
                     <p>Povinné: ${requestBody.required ? '<span class="param-required">Ano</span>' : 'Ne'}</p>
                 `;
-                
                 if (schema) {
-                    html += `
-                        <p>Content Type: <code>${contentType}</code></p>
-                        <p>Schéma: <span class="param-type">${schema.type || ''}</span> ${schema.reference ? `<code>${schema.reference}</code>` : ''}</p>
-                    `;
-                    
-                    // Můžeme přidat schéma objektu, pokud je to objekt
-                    if (schema.type === 'object' || schema.reference) {
-                        html += `<div class="schema-object">
-                            <p><strong>Model objektu:</strong> (ukázkové schéma)</p>
-                            <div class="schema-property">
-                                <span>id: </span><span class="schema-type">integer</span>
-                            </div>
-                            <div class="schema-property">
-                                <span>name: </span><span class="schema-type">string</span>
-                            </div>
-                            <div class="schema-property">
-                                <span>description: </span><span class="schema-type">string</span>
-                            </div>
-                        </div>`;
+                    html += `<p>Content Type: <code>${contentType}</code></p>`;
+                    html += `<p>Schéma: <span class="param-type">${schema.type || ''}</span> ${schema.reference ? `<code>${schema.reference}</code>` : ''}</p>`;
+                    if (schema.reference) {
+                        html += renderModelSample(schema.reference);
                     }
                 }
-                
                 return html;
             }
             
@@ -456,7 +437,6 @@
                 if (!responses) {
                     return '';
                 }
-                
                 let html = `
                     <div class="section-title">Odpovědi</div>
                     <table class="response-table">
@@ -469,20 +449,18 @@
                         </thead>
                         <tbody>
                 `;
-                
                 Object.keys(responses).forEach(code => {
                     const response = responses[code];
                     const contentType = response.content && Object.keys(response.content)[0];
                     const schema = contentType && response.content[contentType].schema;
-                    
                     let schemaText = '';
                     if (schema) {
                         schemaText = `<span class="param-type">${schema.type || 'object'}</span>`;
                         if (schema.reference) {
                             schemaText += ` <code>${schema.reference}</code>`;
+                            schemaText += renderModelSample(schema.reference);
                         }
                     }
-                    
                     html += `
                         <tr>
                             <td><span class="response-code">${code}</span></td>
@@ -491,12 +469,10 @@
                         </tr>
                     `;
                 });
-                
                 html += `
                         </tbody>
                     </table>
                 `;
-                
                 return html;
             }
               // Pomocná funkce pro získání barvy metody
@@ -514,5 +490,44 @@
             // Načtení API dokumentace
             fetchApiDocs();
         });
+    // Pomocná funkce pro ukázku modelu podle reference
+    function renderModelSample(reference) {
+        // Zobrazí ukázkové vlastnosti pro známé modely
+        const modelSamples = {
+            '#/components/schemas/Workspace': [
+                { name: 'id', type: 'integer' },
+                { name: 'name', type: 'string' },
+                { name: 'description', type: 'string' },
+                { name: 'pricePerHour', type: 'number' },
+                { name: 'coworkingSpaceId', type: 'integer' },
+                { name: 'currentStatus', type: 'string' }
+            ],
+            '#/components/schemas/Reservation': [
+                { name: 'id', type: 'integer' },
+                { name: 'workspaceId', type: 'integer' },
+                { name: 'userId', type: 'string' },
+                { name: 'startTime', type: 'string' },
+                { name: 'endTime', type: 'string' },
+                { name: 'isCompleted', type: 'boolean' }
+            ],
+            '#/components/schemas/CoworkingSpace': [
+                { name: 'id', type: 'integer' },
+                { name: 'name', type: 'string' },
+                { name: 'address', type: 'string' },
+                { name: 'phone', type: 'string' },
+                { name: 'email', type: 'string' }
+            ]
+        };
+        if (modelSamples[reference]) {
+            let html = `<div class="schema-object"><strong>Model:</strong> <code>${reference.replace('#/components/schemas/', '')}</code><br/>`;
+            modelSamples[reference].forEach(prop => {
+                html += `<div class="schema-property"><span>${prop.name}: </span><span class="schema-type">${prop.type}</span></div>`;
+            });
+            html += `</div>`;
+            return html;
+        }
+        return '';
+    }
     </script>
+
 }

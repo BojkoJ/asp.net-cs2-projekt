@@ -1,3 +1,4 @@
+using BOJ0043_Web.Infrastructure;
 using BOJ0043_Web.Models;
 using BOJ0043_Web.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -149,6 +150,7 @@ namespace BOJ0043_Web.Controllers
         // GET: CoworkingSpace/GetAll
         [AllowAnonymous] // Povoluje volání bez autentizace
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(IEnumerable<CoworkingSpace>))]
         public async Task<JsonResult> GetAll()
         {
             try
@@ -166,6 +168,7 @@ namespace BOJ0043_Web.Controllers
         // GET: CoworkingSpace/GetById/5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(CoworkingSpace))]
         public async Task<JsonResult> GetById(int id)
         {
             try
@@ -187,6 +190,7 @@ namespace BOJ0043_Web.Controllers
         // GET: CoworkingSpace/GetWithWorkspaces/5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(CoworkingSpace))]
         public async Task<JsonResult> GetWithWorkspaces(int id)
         {
             try
@@ -208,6 +212,7 @@ namespace BOJ0043_Web.Controllers
         // GET: CoworkingSpace/GetWithWorkspacesJson/5
         [AllowAnonymous]
         [HttpGet]
+        [ApiSchema(typeof(void), typeof(CoworkingSpace))]
         public async Task<JsonResult> GetWithWorkspacesJson(int id)
         {
             try
@@ -234,6 +239,7 @@ namespace BOJ0043_Web.Controllers
         // PUT: CoworkingSpace/Update/5 (JSON API for WPF)
         [AllowAnonymous]
         [HttpPut]
+        [ApiSchema(typeof(BOJ0043_Web.Models.CoworkingSpace), typeof(object))]
         public async Task<JsonResult> Update(int id, [FromBody] BOJ0043_Web.Models.CoworkingSpace coworkingSpace)
         {
             if (id != coworkingSpace.Id)
@@ -255,6 +261,7 @@ namespace BOJ0043_Web.Controllers
         // DELETE: CoworkingSpace/DeleteApi/5 (JSON API for WPF)
         [AllowAnonymous]
         [HttpDelete]
+        [ApiSchema(typeof(void), typeof(object))]
         public async Task<JsonResult> DeleteApi(int id)
         {
             try
@@ -280,6 +287,7 @@ namespace BOJ0043_Web.Controllers
         // POST: CoworkingSpace/CreateApi (JSON API for WPF)
         [AllowAnonymous]
         [HttpPost]
+        [ApiSchema(typeof(BOJ0043_Web.Models.CoworkingSpace), typeof(object))]
         public async Task<JsonResult> CreateApi([FromBody] BOJ0043_Web.Models.CoworkingSpace coworkingSpace)
         {
             coworkingSpace.Id = 0;
