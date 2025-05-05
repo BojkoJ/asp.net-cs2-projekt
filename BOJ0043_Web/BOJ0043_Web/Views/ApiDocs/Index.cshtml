@@ -502,26 +502,110 @@
                 { name: 'coworkingSpaceId', type: 'integer' },
                 { name: 'currentStatus', type: 'string' }
             ],
-            '#/components/schemas/Reservation': [
+            '#/components/schemas/WorkspaceDto': [
+                { name: 'id', type: 'integer' },
+                { name: 'name', type: 'string' },
+                { name: 'description', type: 'string' },
+                { name: 'pricePerHour', type: 'number' },
+                { name: 'coworkingSpaceId', type: 'integer' },
+                { name: 'currentStatus', type: 'string' }
+            ],
+            '#/components/schemas/WorkspaceWithCoworkingSpaceDto': [
+                { name: 'id', type: 'integer' },
+                { name: 'name', type: 'string' },
+                { name: 'description', type: 'string' },
+                { name: 'pricePerHour', type: 'number' },
+                { name: 'coworkingSpaceId', type: 'integer' },
+                { name: 'currentStatus', type: 'string' },
+                { name: 'coworkingSpace', type: 'CoworkingSpaceDto' }
+            ],
+            '#/components/schemas/WorkspaceStatusHistoryDto': [
                 { name: 'id', type: 'integer' },
                 { name: 'workspaceId', type: 'integer' },
-                { name: 'userId', type: 'string' },
-                { name: 'startTime', type: 'string' },
-                { name: 'endTime', type: 'string' },
-                { name: 'isCompleted', type: 'boolean' }
+                { name: 'status', type: 'string' },
+                { name: 'changedAt', type: 'string' },
+                { name: 'comment', type: 'string' }
+            ],
+            '#/components/schemas/WorkspaceChangeStatusResultDto': [
+                { name: 'success', type: 'boolean' },
+                { name: 'error', type: 'string' }
+            ],
+            '#/components/schemas/WorkspaceDeleteResultDto': [
+                { name: 'success', type: 'boolean' },
+                { name: 'error', type: 'string' },
+                { name: 'message', type: 'string' }
             ],
             '#/components/schemas/CoworkingSpace': [
                 { name: 'id', type: 'integer' },
                 { name: 'name', type: 'string' },
+                { name: 'description', type: 'string' },
                 { name: 'address', type: 'string' },
-                { name: 'phone', type: 'string' },
-                { name: 'email', type: 'string' }
+                { name: 'latitude', type: 'number' },
+                { name: 'longitude', type: 'number' },
+                { name: 'phoneNumber', type: 'string' },
+                { name: 'email', type: 'string' },
+                { name: 'website', type: 'string' }
+            ],
+            '#/components/schemas/CoworkingSpaceDto': [
+                { name: 'id', type: 'integer' },
+                { name: 'name', type: 'string' },
+                { name: 'description', type: 'string' },
+                { name: 'address', type: 'string' },
+                { name: 'latitude', type: 'number' },
+                { name: 'longitude', type: 'number' },
+                { name: 'phoneNumber', type: 'string' },
+                { name: 'email', type: 'string' },
+                { name: 'website', type: 'string' }
+            ],
+            '#/components/schemas/CoworkingSpaceWithWorkspacesDto': [
+                { name: 'id', type: 'integer' },
+                { name: 'name', type: 'string' },
+                { name: 'description', type: 'string' },
+                { name: 'address', type: 'string' },
+                { name: 'latitude', type: 'number' },
+                { name: 'longitude', type: 'number' },
+                { name: 'phoneNumber', type: 'string' },
+                { name: 'email', type: 'string' },
+                { name: 'website', type: 'string' },
+                { name: 'workspaces', type: 'WorkspaceDto[]' }
+            ],
+            '#/components/schemas/CoworkingSpaceDeleteResultDto': [
+                { name: 'success', type: 'boolean' },
+                { name: 'error', type: 'string' },
+                { name: 'message', type: 'string' }
+            ],
+            '#/components/schemas/CoworkingSpaceCreateResultDto': [
+                { name: 'success', type: 'boolean' },
+                { name: 'id', type: 'integer' },
+                { name: 'message', type: 'string' },
+                { name: 'error', type: 'string' }
             ]
         };
+        // Podpora kolekcí: pokud reference začíná IEnumerable- nebo Array- zobraz pole objektů
+        if (reference.startsWith('#/components/schemas/IEnumerable-') || reference.startsWith('#/components/schemas/Array-')) {
+            const itemType = reference.replace('#/components/schemas/IEnumerable-', '').replace('#/components/schemas/Array-', '');
+            const itemRef = `#/components/schemas/${itemType}`;
+            let html = `<div class="schema-object"><strong>Model:</strong> Pole objektů <code>${itemType}</code><br/>`;
+            if (modelSamples[itemRef]) {
+                html += '<div class="schema-array-items">';
+                modelSamples[itemRef].forEach(prop => {
+                    html += `<div class=\"schema-property\"><span>${prop.name}: </span><span class=\"schema-type\">${prop.type}</span></div>`;
+                });
+                html += '</div>';
+            } else {
+                html += '<em>Struktura položky není popsána.</em>';
+            }
+            html += `</div>`;
+            return html;
+        }
+        // Speciální případ pro DeleteApi: pouze id
+        if (reference === '#/components/schemas/DeleteResultId') {
+            return `<div class=\"schema-object\"><strong>Model:</strong> <code>DeleteResultId</code><br/><div class=\"schema-property\"><span>id: </span><span class=\"schema-type\">integer</span></div></div>`;
+        }
         if (modelSamples[reference]) {
-            let html = `<div class="schema-object"><strong>Model:</strong> <code>${reference.replace('#/components/schemas/', '')}</code><br/>`;
+            let html = `<div class=\"schema-object\"><strong>Model:</strong> <code>${reference.replace('#/components/schemas/', '')}</code><br/>`;
             modelSamples[reference].forEach(prop => {
-                html += `<div class="schema-property"><span>${prop.name}: </span><span class="schema-type">${prop.type}</span></div>`;
+                html += `<div class=\"schema-property\"><span>${prop.name}: </span><span class=\"schema-type\">${prop.type}</span></div>`;
             });
             html += `</div>`;
             return html;

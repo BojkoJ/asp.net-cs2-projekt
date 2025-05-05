@@ -150,13 +150,25 @@ namespace BOJ0043_Web.Controllers
         // GET: CoworkingSpace/GetAll
         [AllowAnonymous] // Povoluje volání bez autentizace
         [HttpGet]
-        [ApiSchema(typeof(void), typeof(IEnumerable<CoworkingSpace>))]
+        [ApiSchema(typeof(void), typeof(IEnumerable<BOJ0043_Web.DTOs.CoworkingSpaceDto>))]
         public async Task<JsonResult> GetAll()
         {
             try
             {
                 var spaces = await _coworkingSpaceRepository.GetAllAsync();
-                return Json(spaces);
+                var dtos = spaces.Select(s => new BOJ0043_Web.DTOs.CoworkingSpaceDto
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Description = s.Description,
+                    Address = s.Address,
+                    Latitude = s.Latitude,
+                    Longitude = s.Longitude,
+                    Website = s.Website,
+                    PhoneNumber = s.PhoneNumber,
+                    Email = s.Email
+                }).ToList();
+                return Json(dtos);
             }
             catch (Exception ex)
             {
@@ -168,7 +180,7 @@ namespace BOJ0043_Web.Controllers
         // GET: CoworkingSpace/GetById/5
         [AllowAnonymous]
         [HttpGet]
-        [ApiSchema(typeof(void), typeof(CoworkingSpace))]
+        [ApiSchema(typeof(void), typeof(BOJ0043_Web.DTOs.CoworkingSpaceDto))]
         public async Task<JsonResult> GetById(int id)
         {
             try
@@ -178,7 +190,19 @@ namespace BOJ0043_Web.Controllers
                 {
                     return Json(new { error = "Coworkingový prostor nebyl nalezen" });
                 }
-                return Json(space);
+                var dto = new BOJ0043_Web.DTOs.CoworkingSpaceDto
+                {
+                    Id = space.Id,
+                    Name = space.Name,
+                    Description = space.Description,
+                    Address = space.Address,
+                    Latitude = space.Latitude,
+                    Longitude = space.Longitude,
+                    PhoneNumber = space.PhoneNumber,
+                    Email = space.Email,
+                    Website = space.Website
+                };
+                return Json(dto);
             }
             catch (Exception ex)
             {
@@ -190,7 +214,7 @@ namespace BOJ0043_Web.Controllers
         // GET: CoworkingSpace/GetWithWorkspaces/5
         [AllowAnonymous]
         [HttpGet]
-        [ApiSchema(typeof(void), typeof(CoworkingSpace))]
+        [ApiSchema(typeof(void), typeof(BOJ0043_Web.DTOs.CoworkingSpaceWithWorkspacesDto))]
         public async Task<JsonResult> GetWithWorkspaces(int id)
         {
             try
@@ -200,7 +224,28 @@ namespace BOJ0043_Web.Controllers
                 {
                     return Json(new { error = "Coworkingový prostor nebyl nalezen" });
                 }
-                return Json(space);
+                var dto = new BOJ0043_Web.DTOs.CoworkingSpaceWithWorkspacesDto
+                {
+                    Id = space.Id,
+                    Name = space.Name,
+                    Description = space.Description,
+                    Address = space.Address,
+                    Latitude = space.Latitude,
+                    Longitude = space.Longitude,
+                    PhoneNumber = space.PhoneNumber,
+                    Email = space.Email,
+                    Website = space.Website,
+                    Workspaces = space.Workspaces?.Select(w => new BOJ0043_Web.DTOs.WorkspaceDto
+                    {
+                        Id = w.Id,
+                        Name = w.Name,
+                        Description = w.Description,
+                        PricePerHour = w.PricePerHour,
+                        CoworkingSpaceId = w.CoworkingSpaceId,
+                        CurrentStatus = w.CurrentStatus
+                    }).ToList() ?? new List<BOJ0043_Web.DTOs.WorkspaceDto>()
+                };
+                return Json(dto);
             }
             catch (Exception ex)
             {
@@ -212,7 +257,7 @@ namespace BOJ0043_Web.Controllers
         // GET: CoworkingSpace/GetWithWorkspacesJson/5
         [AllowAnonymous]
         [HttpGet]
-        [ApiSchema(typeof(void), typeof(CoworkingSpace))]
+        [ApiSchema(typeof(void), typeof(BOJ0043_Web.DTOs.CoworkingSpaceWithWorkspacesDto))]
         public async Task<JsonResult> GetWithWorkspacesJson(int id)
         {
             try
@@ -222,12 +267,28 @@ namespace BOJ0043_Web.Controllers
                 {
                     return Json(new { error = "Coworkingový prostor nebyl nalezen" });
                 }
-                var options = new System.Text.Json.JsonSerializerOptions
+                var dto = new BOJ0043_Web.DTOs.CoworkingSpaceWithWorkspacesDto
                 {
-                    ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve,
-                    WriteIndented = true
+                    Id = space.Id,
+                    Name = space.Name,
+                    Description = space.Description,
+                    Address = space.Address,
+                    Latitude = space.Latitude,
+                    Longitude = space.Longitude,
+                    PhoneNumber = space.PhoneNumber,
+                    Email = space.Email,
+                    Website = space.Website,
+                    Workspaces = space.Workspaces?.Select(w => new BOJ0043_Web.DTOs.WorkspaceDto
+                    {
+                        Id = w.Id,
+                        Name = w.Name,
+                        Description = w.Description,
+                        PricePerHour = w.PricePerHour,
+                        CoworkingSpaceId = w.CoworkingSpaceId,
+                        CurrentStatus = w.CurrentStatus
+                    }).ToList() ?? new List<BOJ0043_Web.DTOs.WorkspaceDto>()
                 };
-                return new JsonResult(space, options);
+                return Json(dto);
             }
             catch (Exception ex)
             {
@@ -239,29 +300,28 @@ namespace BOJ0043_Web.Controllers
         // PUT: CoworkingSpace/Update/5 (JSON API for WPF)
         [AllowAnonymous]
         [HttpPut]
-        [ApiSchema(typeof(BOJ0043_Web.Models.CoworkingSpace), typeof(object))]
+        [ApiSchema(typeof(BOJ0043_Web.DTOs.CoworkingSpaceDto), typeof(BOJ0043_Web.DTOs.CoworkingSpaceCreateResultDto))]
         public async Task<JsonResult> Update(int id, [FromBody] BOJ0043_Web.Models.CoworkingSpace coworkingSpace)
         {
             if (id != coworkingSpace.Id)
-                return Json(new { error = "ID nesouhlasí" });
+                return Json(new BOJ0043_Web.DTOs.CoworkingSpaceCreateResultDto { Success = false, Error = "ID nesouhlasí" });
 
             try
             {
                 await _coworkingSpaceRepository.UpdateAsync(coworkingSpace);
                 await _coworkingSpaceRepository.SaveChangesAsync();
-                // Return only a success message or the updated ID, not the full object
-                return Json(new { success = true, id = coworkingSpace.Id });
+                return Json(new BOJ0043_Web.DTOs.CoworkingSpaceCreateResultDto { Success = true, Id = coworkingSpace.Id });
             }
             catch (Exception ex)
             {
-                return Json(new { error = ex.Message });
+                return Json(new BOJ0043_Web.DTOs.CoworkingSpaceCreateResultDto { Success = false, Error = ex.Message });
             }
         }
 
         // DELETE: CoworkingSpace/DeleteApi/5 (JSON API for WPF)
         [AllowAnonymous]
         [HttpDelete]
-        [ApiSchema(typeof(void), typeof(object))]
+        [ApiSchema(typeof(void), typeof(BOJ0043_Web.DTOs.CoworkingSpaceDeleteResultDto))]
         public async Task<JsonResult> DeleteApi(int id)
         {
             try
@@ -269,32 +329,32 @@ namespace BOJ0043_Web.Controllers
                 var space = await _coworkingSpaceRepository.GetByIdAsync(id);
                 if (space == null)
                 {
-                    return Json(new { error = "Coworkingový prostor nebyl nalezen" });
+                    return Json(new BOJ0043_Web.DTOs.CoworkingSpaceDeleteResultDto { Success = false, Error = "Coworkingový prostor nebyl nalezen" });
                 }
 
                 await _coworkingSpaceRepository.DeleteAsync(space);
                 await _coworkingSpaceRepository.SaveChangesAsync();
 
-                return Json(new { success = true, message = "Coworkingový prostor byl úspěšně smazán" });
+                return Json(new BOJ0043_Web.DTOs.CoworkingSpaceDeleteResultDto { Success = true, Message = "Coworkingový prostor byl úspěšně smazán" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Chyba při mazání coworkingového prostoru s ID {id}");
-                return Json(new { error = "Interní chyba serveru: " + ex.Message });
+                return Json(new BOJ0043_Web.DTOs.CoworkingSpaceDeleteResultDto { Success = false, Error = "Interní chyba serveru: " + ex.Message });
             }
         }
         
         // POST: CoworkingSpace/CreateApi (JSON API for WPF)
         [AllowAnonymous]
         [HttpPost]
-        [ApiSchema(typeof(BOJ0043_Web.Models.CoworkingSpace), typeof(object))]
+        [ApiSchema(typeof(BOJ0043_Web.DTOs.CoworkingSpaceDto), typeof(BOJ0043_Web.DTOs.CoworkingSpaceCreateResultDto))]
         public async Task<JsonResult> CreateApi([FromBody] BOJ0043_Web.Models.CoworkingSpace coworkingSpace)
         {
             coworkingSpace.Id = 0;
 
             if (string.IsNullOrWhiteSpace(coworkingSpace.Name))
             {
-                return Json(new { error = "Název coworkingového prostoru je povinný." });
+                return Json(new BOJ0043_Web.DTOs.CoworkingSpaceCreateResultDto { Success = false, Error = "Název coworkingového prostoru je povinný." });
             }
 
             // Validace na straně serveru - telefon a email
@@ -304,19 +364,19 @@ namespace BOJ0043_Web.Controllers
             {
                 // Return the first error (or all if you want)
                 var errorMessages = validationResults.Select(r => r.ErrorMessage).ToArray();
-                return Json(new { error = string.Join(" ", errorMessages) });
+                return Json(new BOJ0043_Web.DTOs.CoworkingSpaceCreateResultDto { Success = false, Error = string.Join(" ", errorMessages) });
             }
 
             try
             {
                 await _coworkingSpaceRepository.AddAsync(coworkingSpace);
                 await _coworkingSpaceRepository.SaveChangesAsync();
-                return Json(new { success = true, id = coworkingSpace.Id, message = "Coworkingový prostor byl úspěšně vytvořen." });
+                return Json(new BOJ0043_Web.DTOs.CoworkingSpaceCreateResultDto { Success = true, Id = coworkingSpace.Id, Message = "Coworkingový prostor byl úspěšně vytvořen." });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Chyba při vytváření nového coworkingového prostoru");
-                return Json(new { error = "Interní chyba serveru při vytváření coworkingového prostoru: " + ex.Message });
+                return Json(new BOJ0043_Web.DTOs.CoworkingSpaceCreateResultDto { Success = false, Error = "Interní chyba serveru při vytváření coworkingového prostoru: " + ex.Message });
             }
         }
 

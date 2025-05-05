@@ -1,0 +1,39 @@
+@model BOJ0043_Web.Models.Workspace
+
+@{
+    ViewData["Title"] = "Smazat pracovní místo";
+}
+
+<h1>Smazat pracovní místo</h1>
+
+<div class="alert alert-danger">
+    <h3>Opravdu chcete smazat toto pracovní místo?</h3>
+    <p>Smazáním se odstraní i všechny rezervace tohoto místa.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>@Model.Name</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Popis</dt>
+                    <dd class="col-sm-8">@Model.Description</dd>
+                    <dt class="col-sm-4">Cena za hodinu</dt>
+                    <dd class="col-sm-8">@Model.PricePerHour Kč</dd>
+                    <dt class="col-sm-4">Coworking prostor</dt>
+                    <dd class="col-sm-8">@Model.CoworkingSpace?.Name</dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger">Potvrdit smazání</button>
+                    <a asp-action="Index" class="btn btn-secondary">Zpět na seznam</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
